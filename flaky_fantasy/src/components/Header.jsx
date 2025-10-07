@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/Header.css";
 
 const Header = () => {
@@ -12,34 +13,38 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <div className="logo">
-          <img src="./src/assets/logo.png" alt="Logo" className="logo-image" />
+          <Link to="/">
+            <img
+              src="./src/assets/logo.png"
+              alt="Logo"
+              className="logo-image"
+            />
+          </Link>
         </div>
 
         <nav className={`nav-menu ${isMenuOpen ? "mobile-open" : ""}`}>
           <ul>
             <li>
-              <a href="#home">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li>
-              <a href="#shop">Shop</a>
-            </li>
-
-            <li>
-              <a href="#services">Services</a>
-            </li>
-
-            <li>
-              <a href="#contact">Contact Us</a>
+              <Link to="/shop">Shop</Link>
             </li>
             <li>
-              <a href="#Terms of Services">Terms of Services</a>
+              <Link to="/services">Services</Link>
+            </li>
+            <li>
+              <Link to="/contact">Contact Us</Link>
+            </li>
+            <li>
+              <Link to="/terms">Terms of Services</Link>
             </li>
           </ul>
         </nav>
 
         <div className="header-actions">
           <div className="cart-icon">
-            <a href="#cart">
+            <Link to="/cart">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -56,7 +61,7 @@ const Header = () => {
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
               </svg>
               <span className="cart-count">0</span>
-            </a>
+            </Link>
           </div>
 
           <button className="hamburger-menu" onClick={toggleMenu}>
