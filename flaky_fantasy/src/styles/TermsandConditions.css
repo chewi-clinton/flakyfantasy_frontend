@@ -1,0 +1,264 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.terms-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 80px 40px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", sans-serif;
+}
+
+.terms-content {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.terms-header {
+  text-align: center;
+  margin-bottom: 50px;
+  animation: fadeInDown 0.8s ease;
+}
+
+.terms-header h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  letter-spacing: -1px;
+}
+
+.last-updated {
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.welcome-section {
+  background: linear-gradient(135deg, #f0c05a 0%, #d4a546 100%);
+  padding: 35px 40px;
+  border-radius: 15px;
+  margin-bottom: 50px;
+  box-shadow: 0 10px 30px rgba(240, 192, 90, 0.3);
+  animation: fadeIn 0.8s ease 0.2s backwards;
+}
+
+.welcome-text {
+  font-size: 1.15rem;
+  color: #ffffff;
+  line-height: 1.7;
+  text-align: center;
+  font-weight: 500;
+}
+
+.terms-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.term-card {
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease backwards;
+  border: 1px solid rgba(240, 192, 90, 0.1);
+}
+
+.term-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.term-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.term-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.term-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.term-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.term-card:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.term-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(240, 192, 90, 0.2);
+  border-color: rgba(240, 192, 90, 0.3);
+}
+
+.term-icon {
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(135deg, #f0c05a 0%, #d4a546 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(240, 192, 90, 0.3);
+}
+
+.term-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+  letter-spacing: -0.5px;
+}
+
+.term-card p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #555;
+  font-weight: 400;
+}
+
+.term-card strong {
+  color: #f0c05a;
+  font-weight: 600;
+}
+
+.terms-footer {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.8s ease 0.7s backwards;
+}
+
+.footer-notice {
+  padding: 25px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 10px;
+  border-left: 4px solid #f0c05a;
+  margin-bottom: 25px;
+}
+
+.footer-notice p {
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+.footer-contact {
+  text-align: center;
+}
+
+.footer-contact p {
+  font-size: 1rem;
+  color: #666;
+}
+
+.footer-contact a {
+  color: #f0c05a;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.footer-contact a:hover {
+  color: #d4a546;
+  text-decoration: underline;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 50px 20px;
+  }
+
+  .terms-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .welcome-section {
+    padding: 25px 25px;
+  }
+
+  .welcome-text {
+    font-size: 1rem;
+  }
+
+  .terms-sections {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .term-card {
+    padding: 28px;
+  }
+
+  .term-card h2 {
+    font-size: 1.3rem;
+  }
+
+  .term-icon {
+    width: 55px;
+    height: 55px;
+  }
+
+  .terms-footer {
+    padding: 30px 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-header h1 {
+    font-size: 2rem;
+  }
+
+  .term-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .term-card p {
+    font-size: 0.9rem;
+  }
+}

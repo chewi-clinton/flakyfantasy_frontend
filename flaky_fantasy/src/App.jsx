@@ -1,13 +1,12 @@
-import Home from "./components/Home.jsx";
 import CartPage from "./pages/Cart.jsx";
-import OrderConfirmation from "./pages/OrderConfirmation.jsx";
-import ProductDetail from "./pages/Product_details.jsx";
-import ShopPage from "./pages/Shop.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
+import Services from "./pages/Services.jsx";
+import TermsConditions from "./pages/TermsandPrivacy.jsx";
 
 function App() {
   return (
     <div className="App">
-      <CartPage />
+      <TermsConditions />
     </div>
   );
 }
