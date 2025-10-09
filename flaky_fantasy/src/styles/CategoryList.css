@@ -1,0 +1,240 @@
+/* CategoryList.css */
+.category-list-page {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.category-form-container {
+  margin-bottom: 30px;
+  animation: slideInUp 0.5s ease-out;
+}
+
+.category-form {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+}
+
+.category-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.category-input:focus {
+  outline: none;
+  border-color: #f0c05a;
+  box-shadow: 0 0 0 3px rgba(240, 192, 90, 0.2);
+}
+
+.category-table-container {
+  overflow-x: auto;
+  animation: fadeIn 0.7s ease-out;
+}
+
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.category-table th {
+  background-color: #f9f5f0;
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+.category-table td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.category-table tbody tr {
+  animation: slideInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.category-table tbody tr:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.category-table tbody tr:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.category-table tbody tr:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.category-table tbody tr:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.category-table tbody tr:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.category-table tbody tr:hover {
+  background-color: #f9f9f0;
+  transform: scale(1.01);
+}
+
+.edit-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #f0c05a;
+  box-shadow: 0 0 0 3px rgba(240, 192, 90, 0.2);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.action-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #e6f7ff;
+  color: #3498db;
+}
+
+.edit-btn:hover {
+  background-color: #d4eaff;
+  transform: scale(1.1) rotate(15deg);
+}
+
+.save-btn {
+  background-color: #e6f7e6;
+  color: #2ecc71;
+}
+
+.save-btn:hover {
+  background-color: #d4eaff;
+  transform: scale(1.1);
+}
+
+.cancel-btn {
+  background-color: #ffeaea;
+  color: #e74c3c;
+}
+
+.cancel-btn:hover {
+  background-color: #ffd6d6;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  background-color: #ffeaea;
+  color: #e74c3c;
+}
+
+.delete-btn:hover {
+  background-color: #ffd6d6;
+  transform: scale(1.1) rotate(15deg);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .category-table-container {
+    overflow-x: scroll;
+  }
+
+  .category-table {
+    min-width: 400px;
+  }
+}
+/* CategoryList.css - Updated */
+.category-list-page {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.back-btn:hover {
+  background-color: #f0f0f0;
+  color: #333;
+  transform: translateX(-3px);
+}
+
+.admin-page-header h1 {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin: 0;
+}
