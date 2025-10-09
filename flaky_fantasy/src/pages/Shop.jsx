@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Shop.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import heroCake from "../assets/hero-cake.png"; // Import the hero cake image
 
 const ShopPage = () => {
   const [activePage, setActivePage] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
 
   const desserts = [
     {
@@ -15,7 +18,7 @@ const ShopPage = () => {
       price: 35000,
       tags: ["NEW"],
       category: "Cakes",
-      image: "path-to-image-1.jpg",
+      image: heroCake, // Use the imported hero cake image
     },
     {
       id: 2,
@@ -71,6 +74,10 @@ const ShopPage = () => {
 
   const handleAddToCart = (id) => {
     alert(`Added item #${id} to cart!`);
+  };
+
+  const handleProductClick = (id) => {
+    navigate(`/product-details?id=${id}`);
   };
 
   const getTagClass = (tag) => {
@@ -130,7 +137,11 @@ const ShopPage = () => {
         <div className="products-grid">
           {desserts.map((dessert) => (
             <div key={dessert.id} className="product-card">
-              <div className="product-image-container">
+              <div
+                className="product-image-container"
+                onClick={() => handleProductClick(dessert.id)}
+                style={{ cursor: "pointer" }}
+              >
                 <img
                   src={dessert.image}
                   alt={dessert.name}
@@ -145,7 +156,13 @@ const ShopPage = () => {
                 </div>
               </div>
               <div className="product-info">
-                <h3 className="product-name">{dessert.name}</h3>
+                <h3
+                  className="product-name"
+                  onClick={() => handleProductClick(dessert.id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {dessert.name}
+                </h3>
                 <div className="product-price">
                   {dessert.price.toLocaleString()} FCFA
                 </div>

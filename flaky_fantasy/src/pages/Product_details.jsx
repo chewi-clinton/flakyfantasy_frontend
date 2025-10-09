@@ -1,18 +1,26 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import "../styles/product_detail.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import heroCake from "../assets/hero-cake.png"; // Import the hero cake image
 
 const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("medium");
   const [customText, setCustomText] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const location = useLocation();
 
+  // Get product ID from URL query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const productId = queryParams.get("id") || "1";
+
+  // Product data with hero cake image for product ID 1
   const product = {
     id: 1,
     name: "Chocolate Fudge Cake",
     price: 35.0,
-    image: "path-to-image.jpg",
+    image: productId === "1" ? heroCake : "path-to-image.jpg", // Use hero cake for product ID 1
     sizes: [
       { name: "Small", price: 25.0 },
       { name: "Medium", price: 35.0 },
