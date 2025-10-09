@@ -3,7 +3,8 @@ import { useLocation } from "react-router-dom";
 import "../styles/product_detail.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import heroCake from "../assets/hero-cake.png"; // Import the hero cake image
+import heroCake from "../assets/hero-cake.png";
+import ndcake from "../assets/Birthday_cakes.JPG";
 
 const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("medium");
@@ -11,16 +12,14 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const location = useLocation();
 
-  // Get product ID from URL query parameters
   const queryParams = new URLSearchParams(location.search);
   const productId = queryParams.get("id") || "1";
 
-  // Product data with hero cake image for product ID 1
   const product = {
     id: 1,
     name: "Chocolate Fudge Cake",
     price: 35.0,
-    image: productId === "1" ? heroCake : "path-to-image.jpg", // Use hero cake for product ID 1
+    image: productId === "1" ? heroCake : "path-to-image.jpg",
     sizes: [
       { name: "Small", price: 25.0 },
       { name: "Medium", price: 35.0 },
@@ -60,7 +59,9 @@ const ProductDetail = () => {
 
           <div className="product-details">
             <h1 className="product-name">{product.name}</h1>
-            <div className="product-price">${getSizePrice().toFixed(2)}</div>
+            <div className="product-price">
+              {getSizePrice().toFixed(2)} FCFA
+            </div>
 
             <div className="size-selection">
               <h3>Select Size</h3>
@@ -74,7 +75,9 @@ const ProductDetail = () => {
                     onClick={() => setSelectedSize(size.name.toLowerCase())}
                   >
                     {size.name}
-                    <span className="size-price">${size.price.toFixed(2)}</span>
+                    <span className="size-price">
+                      {size.price.toFixed(2)} FCFA
+                    </span>
                   </button>
                 ))}
               </div>
@@ -129,30 +132,26 @@ const ProductDetail = () => {
           <div className="related-grid">
             <div className="related-product">
               <img
-                src="path-to-image-2.jpg"
+                src={heroCake}
+                alt="Chocolate Fudge Cake"
+                className="related-image"
+              />
+              <h3>Chocolate Fudge Cake</h3>
+              <div className="related-price">35.00 FCFA</div>
+            </div>
+            <div className="related-product">
+              <img
+                src={ndcake}
                 alt="Strawberry Cheesecake"
                 className="related-image"
               />
               <h3>Strawberry Cheesecake</h3>
-              <div className="related-price">$32.00</div>
+              <div className="related-price">32.00 FCFA</div>
             </div>
             <div className="related-product">
-              <img
-                src="path-to-image-3.jpg"
-                alt="Lemon Tart"
-                className="related-image"
-              />
+              <img src={heroCake} alt="Lemon Tart" className="related-image" />
               <h3>Lemon Tart</h3>
-              <div className="related-price">$28.00</div>
-            </div>
-            <div className="related-product">
-              <img
-                src="path-to-image-4.jpg"
-                alt="Chocolate Mousse"
-                className="related-image"
-              />
-              <h3>Chocolate Mousse</h3>
-              <div className="related-price">$25.00</div>
+              <div className="related-price">28.00 FCFA</div>
             </div>
           </div>
         </div>
