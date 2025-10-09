@@ -12,7 +12,7 @@ const ShopPage = () => {
     {
       id: 1,
       name: "Chocolate Fudge Cake",
-      price: 35.0,
+      price: 35000,
       tags: ["NEW"],
       category: "Cakes",
       image: "path-to-image-1.jpg",
@@ -20,7 +20,7 @@ const ShopPage = () => {
     {
       id: 2,
       name: "Vanilla Bean Cupcakes",
-      price: 20.0,
+      price: 20000,
       tags: ["BEST SELLER"],
       category: "Cupcakes",
       image: "path-to-image-2.jpg",
@@ -28,7 +28,7 @@ const ShopPage = () => {
     {
       id: 3,
       name: "Strawberry Cheesecake",
-      price: 28.0,
+      price: 28000,
       tags: [],
       category: "Cakes",
       image: "path-to-image-3.jpg",
@@ -36,7 +36,7 @@ const ShopPage = () => {
     {
       id: 4,
       name: "Lemon Tart",
-      price: 22.0,
+      price: 22000,
       tags: ["20% OFF"],
       category: "Tarts",
       image: "path-to-image-4.jpg",
@@ -44,7 +44,7 @@ const ShopPage = () => {
     {
       id: 5,
       name: "Red Velvet Cake",
-      price: 32.0,
+      price: 32000,
       tags: [],
       category: "Cakes",
       image: "path-to-image-5.jpg",
@@ -52,7 +52,7 @@ const ShopPage = () => {
     {
       id: 6,
       name: "Tiramisu",
-      price: 26.0,
+      price: 26000,
       tags: ["NEW"],
       category: "Desserts",
       image: "path-to-image-6.jpg",
@@ -146,7 +146,9 @@ const ShopPage = () => {
               </div>
               <div className="product-info">
                 <h3 className="product-name">{dessert.name}</h3>
-                <div className="product-price">${dessert.price.toFixed(2)}</div>
+                <div className="product-price">
+                  {dessert.price.toLocaleString()} FCFA
+                </div>
                 <button
                   className="add-to-cart-btn"
                   onClick={() => handleAddToCart(dessert.id)}

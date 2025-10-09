@@ -14,6 +14,7 @@ import ProductForm from "./Admin/ProductForm.jsx";
 import CategoryList from "./Admin/CategoryList.jsx";
 import DiscountList from "./Admin/DiscountList.jsx";
 import ServiceList from "./Admin/ServiceList.jsx";
+import ProductDetail from "./pages/Product_details.jsx";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
+          <Route path="/product-details" element={<ProductDetail />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<ContactUs />} />

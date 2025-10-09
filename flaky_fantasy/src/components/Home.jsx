@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 import Header from "./Header";
 import Footer from "./Footer";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   const products = [
     {
       id: 1,
@@ -246,8 +249,18 @@ const Home = () => {
                 <span className="highlight">Happiness</span>
               </h1>
               <div className="hero-buttons" ref={buttonsRef}>
-                <button className="btn btn-primary">Shop Now</button>
-                <button className="btn btn-secondary">Explore Services</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate("/shop")}
+                >
+                  Shop Now
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => navigate("/services")}
+                >
+                  Explore Services
+                </button>
               </div>
             </div>
             <div className="hero-image-container" ref={imageRef}>
@@ -309,7 +322,9 @@ const Home = () => {
             />
             <h2 className="promo-text">On Birthday Cakes this week</h2>
           </div>
-          <button className="promo-btn">Order Now</button>
+          <button className="promo-btn" onClick={() => navigate("/shop")}>
+            Order Now
+          </button>
         </div>
       </section>
 
