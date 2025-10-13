@@ -108,7 +108,9 @@ const ContactUs = () => {
                   </div>
                   <div className="info-text">
                     <p className="info-label">PHONE</p>
-                    <p className="info-value">+73-382-0410</p>
+                    <p className="info-value">
+                      +237 650-966-992 or +237 690-694-602
+                    </p>
                   </div>
                 </div>
 
@@ -131,7 +133,7 @@ const ContactUs = () => {
                   </div>
                   <div className="info-text">
                     <p className="info-label">EMAIL</p>
-                    <p className="info-value">office@divinesweettreats.com</p>
+                    <p className="info-value">kiemenyisamiratu@gmail.com</p>
                   </div>
                 </div>
 
@@ -156,7 +158,9 @@ const ContactUs = () => {
                   </div>
                   <div className="info-text">
                     <p className="info-label">ADDRESS</p>
-                    <p className="info-value">1425 N McLean Blvd, Elgin, IL</p>
+                    <p className="info-value">
+                      Carrefour Obili,Yaounde - Cameroon
+                    </p>
                   </div>
                 </div>
               </div>
@@ -183,14 +187,14 @@ const ContactUs = () => {
 
           <div className="map-section">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3004.8974305631944!2d-88.3128!3d42.0354!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDLCsDAyJzA3LjQiTiA4OMKwMTgnNDYuMSJX!5e0!3m2!1sen!2sus!4v1234567890"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d…!2d11.49253!3d3.85734!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMy44NTczNCwgMTEuNDkyNTM!5e0!3m2!1sen!2sus!4v1234567890"
               width="100%"
               height="350"
-              style={{ border: 0 }}
-              allowFullScreen=""
+              style="border:0;"
+              allowfullscreen=""
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Location Map"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Carrefour Obili Location Map"
             ></iframe>
           </div>
         </div>

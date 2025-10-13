@@ -1,39 +1,57 @@
-// AdminLogin.jsx
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAdmin } from "../context/AdminContext";
 import "../styles/AdminLogin.css";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const adminContext = useAdmin();
+
+  // Safely destructure with fallback values
+  const login =
+    adminContext?.login ||
+    (() =>
+      Promise.resolve({
+        success: false,
+        error: "Authentication service unavailable",
+      }));
+  const isAuthenticated = adminContext?.isAuthenticated || false;
 
   useEffect(() => {
-    // Focus on email input when component mounts
-    document.getElementById("email-input")?.focus();
-  }, []);
+    document.getElementById("username-input")?.focus();
+    if (isAuthenticated) {
+      navigate("/admin/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const result = await login({ username, password });
+      if (result.success) {
+        navigate("/admin/dashboard");
+      } else {
+        setError(
+          result.error || "Login failed. Please check your credentials."
+        );
+      }
+    } catch (err) {
+      setError("An error occurred during login. Please try again.");
+      console.error(err);
+    } finally {
       setIsLoading(false);
-      setShowSuccess(true);
-
-      // Reset form after success
-      setTimeout(() => {
-        setShowSuccess(false);
-        setEmail("");
-        setPassword("");
-      }, 3000);
-    }, 1500);
+    }
   };
 
   return (
     <div className="container">
-      {/* Login Form */}
       <div className="login-form">
         <div className="form-content">
           <div className="logo-container">
@@ -43,32 +61,29 @@ const AdminLogin = () => {
               className="logo"
             />
           </div>
-
           <h1 className="title">
             <span className="title-word">Holla,</span>
             <span className="title-word">Welcome</span>
             <span className="title-word">Back</span>
           </h1>
-
           <p className="subtitle">
             Crafting a delightful online haven for cake and pastry delights,
             this is the Flaky Fantasy admin gateway.
           </p>
-
           <form className="form" onSubmit={handleSubmit}>
+            {error && <div className="error-message">{error}</div>}
             <div className="input-group">
-              <label htmlFor="email-input">Email Address</label>
+              <label htmlFor="username-input">Username</label>
               <input
-                id="email-input"
-                type="email"
-                placeholder="Enter your email"
+                id="username-input"
+                type="text"
+                placeholder="Enter your username"
                 className="input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
-
             <div className="input-group">
               <label htmlFor="password-input">Password</label>
               <input
@@ -81,7 +96,6 @@ const AdminLogin = () => {
                 required
               />
             </div>
-
             <button
               type="submit"
               className={`button ${isLoading ? "loading" : ""}`}
@@ -89,17 +103,9 @@ const AdminLogin = () => {
             >
               {isLoading ? <span className="button-loader"></span> : "Sign In"}
             </button>
-
-            {showSuccess && (
-              <div className="success-message">
-                Login successful! Redirecting...
-              </div>
-            )}
           </form>
-
           <div className="form-footer"></div>
         </div>
-
         <div className="decorative-elements">
           <div className="decorative-circle circle-1"></div>
           <div className="decorative-circle circle-2"></div>

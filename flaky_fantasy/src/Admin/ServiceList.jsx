@@ -1,6 +1,6 @@
-// Admin/ServiceList.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { adminProductsAPI } from "../api/AdminApi.jsx";
 import "../styles/ServiceList.css";
 
 const ServiceList = () => {
@@ -12,40 +12,23 @@ const ServiceList = () => {
     price: "",
     is_active: true,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const mockServices = [
-      {
-        id: 1,
-        name: "Custom Cakes",
-        description: "Bespoke cakes designed for your special occasions",
-        price: 35.0,
-        is_active: true,
-      },
-      {
-        id: 2,
-        name: "Event Catering",
-        description: "Professional catering services for all your events",
-        price: null,
-        is_active: true,
-      },
-      {
-        id: 3,
-        name: "Pastry Buffets",
-        description: "Stunning dessert tables for any occasion",
-        price: null,
-        is_active: true,
-      },
-      {
-        id: 4,
-        name: "Home Delivery",
-        description: "Fresh desserts delivered to your doorstep",
-        price: 5.0,
-        is_active: true,
-      },
-    ];
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const response = await adminProductsAPI.getServices();
+        setServices(response);
+      } catch (err) {
+        setError("Failed to load services");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setServices(mockServices);
+    fetchServices();
   }, []);
 
   const handleInputChange = (e) => {
@@ -56,47 +39,61 @@ const ServiceList = () => {
     });
   };
 
-  const handleAddService = (e) => {
+  const handleAddService = async (e) => {
     e.preventDefault();
-    if (newService.name && newService.description) {
-      const service = {
-        id: services.length + 1,
-        name: newService.name,
-        description: newService.description,
-        price: newService.price ? parseFloat(newService.price) : null,
-        is_active: newService.is_active,
-      };
-
-      setServices([...services, service]);
-      setNewService({
-        name: "",
-        description: "",
-        price: "",
-        is_active: true,
-      });
+    if (newService.name.trim() && newService.description.trim()) {
+      try {
+        await adminProductsAPI.createService(newService);
+        const response = await adminProductsAPI.getServices();
+        setServices(response);
+        setNewService({
+          name: "",
+          description: "",
+          price: "",
+          is_active: true,
+        });
+      } catch (err) {
+        setError("Failed to create service");
+      }
     }
   };
 
-  const toggleServiceStatus = (id) => {
-    setServices(
-      services.map((service) =>
-        service.id === id
-          ? { ...service, is_active: !service.is_active }
-          : service
-      )
-    );
+  const toggleServiceStatus = async (id, currentStatus) => {
+    try {
+      await adminProductsAPI.toggleService(id);
+      setServices(
+        services.map((service) =>
+          service.id === id
+            ? { ...service, is_active: !currentStatus }
+            : service
+        )
+      );
+    } catch (err) {
+      setError("Failed to toggle service status");
+    }
   };
 
-  const deleteService = (id) => {
+  const deleteService = async (id) => {
     if (window.confirm("Are you sure you want to delete this service?")) {
-      setServices(services.filter((service) => service.id !== id));
+      try {
+        await adminProductsAPI.deleteService(id);
+        setServices(services.filter((service) => service.id !== id));
+      } catch (err) {
+        setError("Failed to delete service");
+      }
     }
   };
+
+  if (loading) return <div className="loading">Loading services...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="service-list-page">
       <div className="admin-page-header">
-        <button className="back-btn" onClick={() => navigate("/admin")}>
+        <button
+          className="back-btn"
+          onClick={() => navigate("/admin/dashboard")}
+        >
           ← Back to Dashboard
         </button>
         <h1>Services</h1>
@@ -104,56 +101,54 @@ const ServiceList = () => {
 
       <div className="service-form-container">
         <form onSubmit={handleAddService} className="service-form">
-          <div className="form-grid">
-            <div className="form-group">
-              <label>Service Name</label>
+          <div className="form-group">
+            <label>Service Name</label>
+            <input
+              type="text"
+              name="name"
+              value={newService.name}
+              onChange={handleInputChange}
+              placeholder="Enter service name"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Description</label>
+            <textarea
+              name="description"
+              value={newService.description}
+              onChange={handleInputChange}
+              placeholder="Enter service description"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+
+          <div className="form-group">
+            <label>Price (FCFA)</label>
+            <input
+              type="number"
+              name="price"
+              value={newService.price}
+              onChange={handleInputChange}
+              placeholder="Enter price"
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          <div className="form-group checkbox-group">
+            <label className="checkbox-label">
               <input
-                type="text"
-                name="name"
-                value={newService.name}
+                type="checkbox"
+                name="is_active"
+                checked={newService.is_active}
                 onChange={handleInputChange}
-                placeholder="Service name"
-                required
               />
-            </div>
-
-            <div className="form-group">
-              <label>Price ($)</label>
-              <input
-                type="number"
-                name="price"
-                value={newService.price}
-                onChange={handleInputChange}
-                placeholder="Price (optional)"
-                min="0"
-                step="0.01"
-              />
-            </div>
-
-            <div className="form-group full-width">
-              <label>Description</label>
-              <textarea
-                name="description"
-                value={newService.description}
-                onChange={handleInputChange}
-                placeholder="Service description"
-                rows="3"
-                required
-              ></textarea>
-            </div>
-
-            <div className="form-group checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="is_active"
-                  checked={newService.is_active}
-                  onChange={handleInputChange}
-                />
-                <span className="checkmark"></span>
-                Active
-              </label>
-            </div>
+              <span className="checkmark"></span>
+              Active
+            </label>
           </div>
 
           <button type="submit" className="btn btn-primary">
@@ -166,7 +161,7 @@ const ServiceList = () => {
         <table className="service-table">
           <thead>
             <tr>
-              <th>Service Name</th>
+              <th>Name</th>
               <th>Description</th>
               <th>Price</th>
               <th>Status</th>
@@ -176,9 +171,9 @@ const ServiceList = () => {
           <tbody>
             {services.map((service) => (
               <tr key={service.id}>
-                <td className="service-name">{service.name}</td>
-                <td className="service-description">{service.description}</td>
-                <td>{service.price ? `$${service.price.toFixed(2)}` : "-"}</td>
+                <td>{service.name}</td>
+                <td>{service.description}</td>
+                <td>{service.price ? `${service.price} FCFA` : "-"}</td>
                 <td>
                   <span
                     className={`status-badge ${
@@ -193,13 +188,17 @@ const ServiceList = () => {
                     className={`action-btn ${
                       service.is_active ? "deactivate-btn" : "activate-btn"
                     }`}
-                    onClick={() => toggleServiceStatus(service.id)}
+                    onClick={() =>
+                      toggleServiceStatus(service.id, service.is_active)
+                    }
+                    title={service.is_active ? "Deactivate" : "Activate"}
                   >
                     {service.is_active ? "⏸️" : "▶️"}
                   </button>
                   <button
                     className="action-btn delete-btn"
                     onClick={() => deleteService(service.id)}
+                    title="Delete"
                   >
                     🗑️
                   </button>

@@ -1,70 +1,103 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { productsAPI } from "../api/api";
+import { useApp } from "../context/AppContext";
 import "../styles/Shop.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import heroCake from "../assets/hero-cake.png"; // Import the hero cake image
 
 const ShopPage = () => {
   const [activePage, setActivePage] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { addToCart } = useApp();
 
-  const desserts = [
-    {
-      id: 1,
-      name: "Chocolate Fudge Cake",
-      price: 35000,
-      tags: ["NEW"],
-      category: "Cakes",
-      image: heroCake, // Use the imported hero cake image
-    },
-    {
-      id: 2,
-      name: "Vanilla Bean Cupcakes",
-      price: 20000,
-      tags: ["BEST SELLER"],
-      category: "Cupcakes",
-      image: "path-to-image-2.jpg",
-    },
-    {
-      id: 3,
-      name: "Strawberry Cheesecake",
-      price: 28000,
-      tags: [],
-      category: "Cakes",
-      image: "path-to-image-3.jpg",
-    },
-    {
-      id: 4,
-      name: "Lemon Tart",
-      price: 22000,
-      tags: ["20% OFF"],
-      category: "Tarts",
-      image: "path-to-image-4.jpg",
-    },
-    {
-      id: 5,
-      name: "Red Velvet Cake",
-      price: 32000,
-      tags: [],
-      category: "Cakes",
-      image: "path-to-image-5.jpg",
-    },
-    {
-      id: 6,
-      name: "Tiramisu",
-      price: 26000,
-      tags: ["NEW"],
-      category: "Desserts",
-      image: "path-to-image-6.jpg",
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [productsRes, categoriesRes] = await Promise.all([
+          productsAPI.getProducts(),
+          productsAPI.getCategories(),
+        ]);
 
+        // Ensure productsRes.results exists, fallback to productsRes if not
+        const productsData = productsRes.results || productsRes || [];
+        setProducts(productsData);
+        setFilteredProducts(productsData);
+
+        // Ensure categoriesRes.results exists, fallback to categoriesRes if not
+        const categoriesData = categoriesRes.results || categoriesRes || [];
+        // Ensure categoriesData is an array
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      } catch (err) {
+        setError("Failed to load products");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    let result = products;
+
+    if (selectedFilter !== "All") {
+      if (
+        Array.isArray(categories) &&
+        categories.some((cat) => cat && cat.name === selectedFilter)
+      ) {
+        result = result.filter(
+          (product) =>
+            product.category && product.category.name === selectedFilter
+        );
+      } else if (selectedFilter === "Price: Low to High") {
+        result = [...result].sort((a, b) => a.price - b.price);
+      } else if (selectedFilter === "Price: High to Low") {
+        result = [...result].sort((a, b) => b.price - a.price);
+      } else if (selectedFilter === "New Items") {
+        result = result.filter(
+          (product) =>
+            product.labels &&
+            Array.isArray(product.labels) &&
+            product.labels.some((label) => label.name === "NEW")
+        );
+      } else if (selectedFilter === "Best Sellers") {
+        result = result.filter(
+          (product) =>
+            product.labels &&
+            Array.isArray(product.labels) &&
+            product.labels.some((label) => label.name === "BEST SELLER")
+        );
+      } else if (selectedFilter === "Discounts") {
+        result = result.filter(
+          (product) =>
+            product.labels &&
+            Array.isArray(product.labels) &&
+            product.labels.some(
+              (label) => label.name && label.name.includes("OFF")
+            )
+        );
+      }
+    }
+
+    setFilteredProducts(result);
+  }, [products, selectedFilter, categories]);
+
+  // Ensure filterOptions is always an array
   const filterOptions = [
     "All",
-    "Category",
+    ...(Array.isArray(categories)
+      ? categories.map((cat) => (cat ? cat.name : "")).filter(Boolean)
+      : []),
     "Price: Low to High",
     "Price: High to Low",
     "New Items",
@@ -72,8 +105,9 @@ const ShopPage = () => {
     "Discounts",
   ];
 
-  const handleAddToCart = (id) => {
-    alert(`Added item #${id} to cart!`);
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    alert(`Added ${product.name} to cart!`);
   };
 
   const handleProductClick = (id) => {
@@ -81,14 +115,17 @@ const ShopPage = () => {
   };
 
   const getTagClass = (tag) => {
+    if (!tag) return "";
+
     switch (tag) {
       case "NEW":
         return "tag-new";
       case "BEST SELLER":
         return "tag-best-seller";
-      case "20% OFF":
-        return "tag-discount";
       default:
+        if (tag.includes("OFF")) {
+          return "tag-discount";
+        }
         return "";
     }
   };
@@ -97,6 +134,28 @@ const ShopPage = () => {
     setSelectedFilter(filter);
     setShowDropdown(false);
   };
+
+  if (loading)
+    return (
+      <>
+        <Header />
+        <div className="shop-page">
+          <div className="loading">Loading products...</div>
+        </div>
+        <Footer />
+      </>
+    );
+
+  if (error)
+    return (
+      <>
+        <Header />
+        <div className="shop-page">
+          <div className="error">{error}</div>
+        </div>
+        <Footer />
+      </>
+    );
 
   return (
     <>
@@ -135,46 +194,61 @@ const ShopPage = () => {
         </div>
 
         <div className="products-grid">
-          {desserts.map((dessert) => (
-            <div key={dessert.id} className="product-card">
-              <div
-                className="product-image-container"
-                onClick={() => handleProductClick(dessert.id)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={dessert.image}
-                  alt={dessert.name}
-                  className="product-image"
-                />
-                <div className="product-tags">
-                  {dessert.tags.map((tag, index) => (
-                    <span key={index} className={`tag ${getTagClass(tag)}`}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="product-info">
-                <h3
-                  className="product-name"
-                  onClick={() => handleProductClick(dessert.id)}
+          {Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <div key={product.id} className="product-card">
+                <div
+                  className="product-image-container"
+                  onClick={() => handleProductClick(product.id)}
                   style={{ cursor: "pointer" }}
                 >
-                  {dessert.name}
-                </h3>
-                <div className="product-price">
-                  {dessert.price.toLocaleString()} FCFA
+                  {product.images &&
+                  Array.isArray(product.images) &&
+                  product.images.length > 0 ? (
+                    <img
+                      src={product.images[0].image}
+                      alt={product.name}
+                      className="product-image"
+                    />
+                  ) : (
+                    <div className="no-image">No Image</div>
+                  )}
+                  <div className="product-tags">
+                    {product.labels &&
+                      Array.isArray(product.labels) &&
+                      product.labels.map((label, index) => (
+                        <span
+                          key={index}
+                          className={`tag ${getTagClass(label.name)}`}
+                        >
+                          {label.name}
+                        </span>
+                      ))}
+                  </div>
                 </div>
-                <button
-                  className="add-to-cart-btn"
-                  onClick={() => handleAddToCart(dessert.id)}
-                >
-                  Add to Cart
-                </button>
+                <div className="product-info">
+                  <h3
+                    className="product-name"
+                    onClick={() => handleProductClick(product.id)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {product.name}
+                  </h3>
+                  <div className="product-price">
+                    {product.price.toLocaleString()} FCFA
+                  </div>
+                  <button
+                    className="add-to-cart-btn"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="no-products">No products found</div>
+          )}
         </div>
 
         <div className="pagination">

@@ -1,6 +1,6 @@
-// Admin/DiscountList.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { adminDiscountsAPI } from "../api/AdminApi.jsx";
 import "../styles/DiscountList.css";
 
 const DiscountList = () => {
@@ -8,51 +8,29 @@ const DiscountList = () => {
   const [discounts, setDiscounts] = useState([]);
   const [newDiscount, setNewDiscount] = useState({
     code: "",
-    discountType: "percentage",
+    discount_type: "percentage",
     value: "",
-    maxUses: "1",
-    validFrom: "",
-    validUntil: "",
+    max_uses: "1",
+    valid_from: "",
+    valid_until: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const mockDiscounts = [
-      {
-        id: 1,
-        code: "SAVE10",
-        discountType: "percentage",
-        value: 10,
-        maxUses: 50,
-        usedCount: 15,
-        validFrom: "2023-01-01",
-        validUntil: "2023-12-31",
-        is_active: true,
-      },
-      {
-        id: 2,
-        code: "WELCOME5",
-        discountType: "fixed",
-        value: 5,
-        maxUses: 100,
-        usedCount: 42,
-        validFrom: "2023-06-01",
-        validUntil: "2023-12-31",
-        is_active: true,
-      },
-      {
-        id: 3,
-        code: "HOLIDAY20",
-        discountType: "percentage",
-        value: 20,
-        maxUses: 30,
-        usedCount: 30,
-        validFrom: "2023-11-01",
-        validUntil: "2023-12-25",
-        is_active: false,
-      },
-    ];
+    const fetchDiscounts = async () => {
+      try {
+        setLoading(true);
+        const response = await adminDiscountsAPI.getDiscountCodes();
+        setDiscounts(response.results);
+      } catch (err) {
+        setError("Failed to load discounts");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setDiscounts(mockDiscounts);
+    fetchDiscounts();
   }, []);
 
   const handleInputChange = (e) => {
@@ -63,58 +41,72 @@ const DiscountList = () => {
     });
   };
 
-  const handleAddDiscount = (e) => {
+  const handleAddDiscount = async (e) => {
     e.preventDefault();
-    if (
-      newDiscount.code &&
-      newDiscount.value &&
-      newDiscount.validFrom &&
-      newDiscount.validUntil
-    ) {
+
+    try {
       const discount = {
-        id: discounts.length + 1,
         code: newDiscount.code,
-        discountType: newDiscount.discountType,
+        discount_type: newDiscount.discount_type,
         value: parseFloat(newDiscount.value),
-        maxUses: parseInt(newDiscount.maxUses),
-        usedCount: 0,
-        validFrom: newDiscount.validFrom,
-        validUntil: newDiscount.validUntil,
-        is_active: true,
+        max_uses: parseInt(newDiscount.max_uses),
+        valid_from: newDiscount.valid_from,
+        valid_until: newDiscount.valid_until,
       };
 
-      setDiscounts([...discounts, discount]);
+      await adminDiscountsAPI.createDiscountCode(discount);
+      const response = await adminDiscountsAPI.getDiscountCodes();
+      setDiscounts(response.results);
+
       setNewDiscount({
         code: "",
-        discountType: "percentage",
+        discount_type: "percentage",
         value: "",
-        maxUses: "1",
-        validFrom: "",
-        validUntil: "",
+        max_uses: "1",
+        valid_from: "",
+        valid_until: "",
       });
+    } catch (err) {
+      setError("Failed to create discount");
     }
   };
 
-  const toggleDiscountStatus = (id) => {
-    setDiscounts(
-      discounts.map((discount) =>
-        discount.id === id
-          ? { ...discount, is_active: !discount.is_active }
-          : discount
-      )
-    );
+  const toggleDiscountStatus = async (id) => {
+    try {
+      await adminDiscountsAPI.toggleDiscountCode(id);
+      setDiscounts(
+        discounts.map((discount) =>
+          discount.id === id
+            ? { ...discount, is_active: !discount.is_active }
+            : discount
+        )
+      );
+    } catch (err) {
+      setError("Failed to toggle discount status");
+    }
   };
 
-  const deleteDiscount = (id) => {
+  const deleteDiscount = async (id) => {
     if (window.confirm("Are you sure you want to delete this discount?")) {
-      setDiscounts(discounts.filter((discount) => discount.id !== id));
+      try {
+        await adminDiscountsAPI.deleteDiscountCode(id);
+        setDiscounts(discounts.filter((discount) => discount.id !== id));
+      } catch (err) {
+        setError("Failed to delete discount");
+      }
     }
   };
+
+  if (loading) return <div className="loading">Loading discounts...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="discount-list-page">
       <div className="admin-page-header">
-        <button className="back-btn" onClick={() => navigate("/admin")}>
+        <button
+          className="back-btn"
+          onClick={() => navigate("/admin/dashboard")}
+        >
           ← Back to Dashboard
         </button>
         <h1>Discount Codes</h1>
@@ -138,8 +130,8 @@ const DiscountList = () => {
             <div className="form-group">
               <label>Discount Type</label>
               <select
-                name="discountType"
-                value={newDiscount.discountType}
+                name="discount_type"
+                value={newDiscount.discount_type}
                 onChange={handleInputChange}
               >
                 <option value="percentage">Percentage</option>
@@ -165,8 +157,8 @@ const DiscountList = () => {
               <label>Max Uses</label>
               <input
                 type="number"
-                name="maxUses"
-                value={newDiscount.maxUses}
+                name="max_uses"
+                value={newDiscount.max_uses}
                 onChange={handleInputChange}
                 placeholder="Maximum uses"
                 min="1"
@@ -178,8 +170,8 @@ const DiscountList = () => {
               <label>Valid From</label>
               <input
                 type="date"
-                name="validFrom"
-                value={newDiscount.validFrom}
+                name="valid_from"
+                value={newDiscount.valid_from}
                 onChange={handleInputChange}
                 required
               />
@@ -189,8 +181,8 @@ const DiscountList = () => {
               <label>Valid Until</label>
               <input
                 type="date"
-                name="validUntil"
-                value={newDiscount.validUntil}
+                name="valid_until"
+                value={newDiscount.valid_until}
                 onChange={handleInputChange}
                 required
               />
@@ -221,26 +213,26 @@ const DiscountList = () => {
               <tr key={discount.id}>
                 <td className="code-cell">{discount.code}</td>
                 <td>
-                  {discount.discountType === "percentage"
+                  {discount.discount_type === "percentage"
                     ? "Percentage"
                     : "Fixed Amount"}
                 </td>
                 <td>
-                  {discount.discountType === "percentage"
+                  {discount.discount_type === "percentage"
                     ? `${discount.value}%`
-                    : `$${discount.value}`}
+                    : `${discount.value} FCFA`}
                 </td>
                 <td>
-                  {discount.usedCount}/{discount.maxUses}
+                  {discount.used_count}/{discount.max_uses}
                 </td>
                 <td>
                   <div className="validity-dates">
                     <div>
-                      {new Date(discount.validFrom).toLocaleDateString()}
+                      {new Date(discount.valid_from).toLocaleDateString()}
                     </div>
                     <div>to</div>
                     <div>
-                      {new Date(discount.validUntil).toLocaleDateString()}
+                      {new Date(discount.valid_until).toLocaleDateString()}
                     </div>
                   </div>
                 </td>
@@ -259,12 +251,14 @@ const DiscountList = () => {
                       discount.is_active ? "deactivate-btn" : "activate-btn"
                     }`}
                     onClick={() => toggleDiscountStatus(discount.id)}
+                    title={discount.is_active ? "Deactivate" : "Activate"}
                   >
                     {discount.is_active ? "⏸️" : "▶️"}
                   </button>
                   <button
                     className="action-btn delete-btn"
                     onClick={() => deleteDiscount(discount.id)}
+                    title="Delete"
                   >
                     🗑️
                   </button>

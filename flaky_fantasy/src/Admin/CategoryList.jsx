@@ -1,83 +1,89 @@
-// Admin/CategoryList.jsx
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { adminProductsAPI } from "../api/AdminApi.jsx";
 import "../styles/CategoryList.css";
 
 const CategoryList = () => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [editName, setEditName] = useState("");
+  const [newCategory, setNewCategory] = useState({ name: "" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const mockCategories = [
-      { id: 1, name: "Cakes" },
-      { id: 2, name: "Cupcakes" },
-      { id: 3, name: "Pastries" },
-      { id: 4, name: "Cookies" },
-      { id: 5, name: "Bread" },
-    ];
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await adminProductsAPI.getCategories();
+        setCategories(response);
+      } catch (err) {
+        setError("Failed to load categories");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setCategories(mockCategories);
+    fetchCategories();
   }, []);
 
-  const handleAddCategory = (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCategory({
+      ...newCategory,
+      [name]: value,
+    });
+  };
+
+  const handleAddCategory = async (e) => {
     e.preventDefault();
-    if (newCategory.trim()) {
-      const newCat = {
-        id: categories.length + 1,
-        name: newCategory.trim(),
-      };
-      setCategories([...categories, newCat]);
-      setNewCategory("");
+    if (newCategory.name.trim()) {
+      try {
+        await adminProductsAPI.createCategory(newCategory);
+        const response = await adminProductsAPI.getCategories();
+        setCategories(response);
+        setNewCategory({ name: "" });
+      } catch (err) {
+        setError("Failed to create category");
+      }
     }
   };
 
-  const handleDeleteCategory = (id) => {
+  const deleteCategory = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
-      setCategories(categories.filter((category) => category.id !== id));
+      try {
+        await adminProductsAPI.deleteCategory(id);
+        setCategories(categories.filter((category) => category.id !== id));
+      } catch (err) {
+        setError("Failed to delete category");
+      }
     }
   };
 
-  const startEditing = (category) => {
-    setEditingId(category.id);
-    setEditName(category.name);
-  };
-
-  const handleUpdateCategory = (e) => {
-    e.preventDefault();
-    if (editName.trim()) {
-      setCategories(
-        categories.map((category) =>
-          category.id === editingId
-            ? { ...category, name: editName.trim() }
-            : category
-        )
-      );
-      setEditingId(null);
-      setEditName("");
-    }
-  };
-
-  const cancelEditing = () => {
-    setEditingId(null);
-    setEditName("");
-  };
+  if (loading) return <div className="loading">Loading categories...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="category-list-page">
-      <div className="page-header">
+      <div className="admin-page-header">
+        <button
+          className="back-btn"
+          onClick={() => navigate("/admin/dashboard")}
+        >
+          ← Back to Dashboard
+        </button>
         <h1>Categories</h1>
       </div>
 
       <div className="category-form-container">
         <form onSubmit={handleAddCategory} className="category-form">
           <div className="form-group">
+            <label>Category Name</label>
             <input
               type="text"
-              placeholder="New category name"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              className="category-input"
+              name="name"
+              value={newCategory.name}
+              onChange={handleInputChange}
+              placeholder="Enter category name"
               required
             />
           </div>
@@ -92,7 +98,8 @@ const CategoryList = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Category Name</th>
+              <th>Name</th>
+              <th>Created At</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -100,51 +107,15 @@ const CategoryList = () => {
             {categories.map((category) => (
               <tr key={category.id}>
                 <td>{category.id}</td>
-                <td>
-                  {editingId === category.id ? (
-                    <form onSubmit={handleUpdateCategory} className="edit-form">
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="edit-input"
-                        required
-                        autoFocus
-                      />
-                      <div className="edit-actions">
-                        <button type="submit" className="action-btn save-btn">
-                          ✓
-                        </button>
-                        <button
-                          type="button"
-                          className="action-btn cancel-btn"
-                          onClick={cancelEditing}
-                        >
-                          ✗
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
-                    category.name
-                  )}
-                </td>
+                <td>{category.name}</td>
+                <td>{new Date(category.created_at).toLocaleDateString()}</td>
                 <td className="actions">
-                  {editingId !== category.id && (
-                    <>
-                      <button
-                        className="action-btn edit-btn"
-                        onClick={() => startEditing(category)}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="action-btn delete-btn"
-                        onClick={() => handleDeleteCategory(category.id)}
-                      >
-                        🗑️
-                      </button>
-                    </>
-                  )}
+                  <button
+                    className="action-btn delete-btn"
+                    onClick={() => deleteCategory(category.id)}
+                  >
+                    🗑️
+                  </button>
                 </td>
               </tr>
             ))}

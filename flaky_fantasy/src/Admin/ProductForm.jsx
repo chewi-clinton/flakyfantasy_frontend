@@ -1,6 +1,6 @@
-// Admin/ProductForm.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { adminProductsAPI } from "../api/AdminApi.jsx";
 import "../styles/ProductForm.css";
 
 const ProductForm = () => {
@@ -10,64 +10,66 @@ const ProductForm = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
-    price: "",
-    discountPrice: "",
     description: "",
-    ingredients: "",
-    inStock: true,
-    stockQuantity: 0,
-    images: [],
+    price: "",
+    category: "",
+    stock_quantity: "",
+    in_stock: true,
+    labels: [],
   });
 
   const [categories, setCategories] = useState([]);
+  const [labels, setLabels] = useState([]);
+  const [selectedLabels, setSelectedLabels] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
+  const [primaryImageId, setPrimaryImageId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const mockCategories = [
-      "Cakes",
-      "Cupcakes",
-      "Pastries",
-      "Cookies",
-      "Bread",
-    ];
-    setCategories(mockCategories);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [categoriesRes, labelsRes] = await Promise.all([
+          adminProductsAPI.getCategories(),
+          adminProductsAPI.getLabels(),
+        ]);
 
-    if (isEditing) {
-      const mockProduct = {
-        id: 1,
-        name: "Chocolate Fudge Cake",
-        category: "Cakes",
-        price: "35.00",
-        discountPrice: "",
-        description:
-          "Rich and moist chocolate cake with layers of smooth chocolate fudge frosting. Perfect for chocolate lovers!",
-        ingredients:
-          "Flour, Sugar, Eggs, Cocoa Powder, Butter, Milk, Vanilla Extract",
-        inStock: true,
-        stockQuantity: 15,
-        images: ["chocolate-cake-1.jpg", "chocolate-cake-2.jpg"],
-      };
+        setCategories(categoriesRes);
+        setLabels(labelsRes);
 
-      setFormData({
-        name: mockProduct.name,
-        category: mockProduct.category,
-        price: mockProduct.price,
-        discountPrice: mockProduct.discountPrice,
-        description: mockProduct.description,
-        ingredients: mockProduct.ingredients,
-        inStock: mockProduct.inStock,
-        stockQuantity: mockProduct.stockQuantity,
-        images: mockProduct.images,
-      });
+        if (isEditing) {
+          const productRes = await adminProductsAPI.getProduct(id);
+          const product = productRes;
 
-      setImagePreview(
-        mockProduct.images.map((img) => ({
-          name: img,
-          url: `./src/assets/${img}`,
-        }))
-      );
-    }
+          setFormData({
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            category: product.category.id,
+            stock_quantity: product.stock_quantity,
+            in_stock: product.in_stock,
+            labels: product.labels.map((label) => label.id),
+          });
+
+          setSelectedLabels(product.labels.map((label) => label.id));
+          setExistingImages(product.images || []);
+
+          const primaryImage = product.images.find((img) => img.is_primary);
+          if (primaryImage) {
+            setPrimaryImageId(primaryImage.id);
+          }
+        }
+      } catch (err) {
+        setError("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [isEditing, id]);
 
   const handleInputChange = (e) => {
@@ -78,43 +80,112 @@ const ProductForm = () => {
     });
   };
 
+  const handleLabelChange = (e) => {
+    const labelId = parseInt(e.target.value);
+    if (e.target.checked) {
+      setSelectedLabels([...selectedLabels, labelId]);
+    } else {
+      setSelectedLabels(selectedLabels.filter((id) => id !== labelId));
+    }
+  };
+
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map((file) => ({
-      name: file.name,
+    const newImagePreviews = files.map((file) => ({
+      file,
       url: URL.createObjectURL(file),
     }));
 
-    setImagePreview([...imagePreview, ...newImages]);
-    setFormData({
-      ...formData,
-      images: [...formData.images, ...files],
-    });
+    setImageFiles([...imageFiles, ...files]);
+    setImagePreview([...imagePreview, ...newImagePreviews]);
   };
 
-  const removeImage = (index) => {
-    const newImagePreview = [...imagePreview];
-    newImagePreview.splice(index, 1);
-    setImagePreview(newImagePreview);
-
-    const newImages = [...formData.images];
-    newImages.splice(index, 1);
-    setFormData({
-      ...formData,
-      images: newImages,
-    });
+  const removeImage = (index, isExisting = false) => {
+    if (isExisting) {
+      const newImages = [...existingImages];
+      newImages.splice(index, 1);
+      setExistingImages(newImages);
+    } else {
+      const newFiles = [...imageFiles];
+      const newPreviews = [...imagePreview];
+      newFiles.splice(index, 1);
+      newPreviews.splice(index, 1);
+      setImageFiles(newFiles);
+      setImagePreview(newPreviews);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const setAsPrimary = (imageId, isExisting = false) => {
+    if (isExisting) {
+      setPrimaryImageId(imageId);
+    } else {
+      setPrimaryImageId(
+        `new-${imagePreview.findIndex((img) => img.url === imageId)}`
+      );
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Product data:", formData);
-    alert(
-      isEditing
-        ? "Product updated successfully!"
-        : "Product added successfully!"
-    );
-    navigate("/admin/products");
+    setLoading(true);
+    setError(null);
+
+    try {
+      const productData = {
+        name: formData.name,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        category: parseInt(formData.category),
+        stock_quantity: parseInt(formData.stock_quantity),
+        in_stock: formData.in_stock,
+        labels: selectedLabels,
+      };
+
+      let product;
+      if (isEditing) {
+        product = await adminProductsAPI.updateProduct(id, productData);
+      } else {
+        product = await adminProductsAPI.createProduct(productData);
+      }
+
+      for (let i = 0; i < imageFiles.length; i++) {
+        await adminProductsAPI.uploadProductImage(product.id, imageFiles[i]);
+      }
+
+      if (primaryImageId && primaryImageId.toString().startsWith("new-")) {
+        const imageIndex = parseInt(primaryImageId.toString().split("-")[1]);
+        if (imageIndex < imageFiles.length) {
+          const updatedProduct = await adminProductsAPI.getProduct(product.id);
+          if (
+            updatedProduct.images &&
+            updatedProduct.images.length > imageIndex
+          ) {
+            await adminProductsAPI.setPrimaryImage(
+              product.id,
+              updatedProduct.images[imageIndex].id
+            );
+          }
+        }
+      } else if (primaryImageId) {
+        await adminProductsAPI.setPrimaryImage(product.id, primaryImageId);
+      }
+
+      alert(
+        isEditing
+          ? "Product updated successfully!"
+          : "Product added successfully!"
+      );
+      navigate("/admin/products");
+    } catch (err) {
+      setError("Failed to save product");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading && isEditing)
+    return <div className="loading">Loading product data...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="product-form-page">
@@ -154,67 +225,68 @@ const ProductForm = () => {
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+                  <option key={category.id} value={category.id}>
+                    {category.name}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="price">Price ($) *</label>
-                <input
-                  type="number"
-                  id="price"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="discountPrice">Discount Price ($)</label>
-                <input
-                  type="number"
-                  id="discountPrice"
-                  name="discountPrice"
-                  value={formData.discountPrice}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="price">Price (FCFA) *</label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                min="0"
+                step="0.01"
+                required
+              />
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="stockQuantity">Stock Quantity *</label>
-                <input
-                  type="number"
-                  id="stockQuantity"
-                  name="stockQuantity"
-                  value={formData.stockQuantity}
-                  onChange={handleInputChange}
-                  min="0"
-                  required
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="stock_quantity">Stock Quantity *</label>
+              <input
+                type="number"
+                id="stock_quantity"
+                name="stock_quantity"
+                value={formData.stock_quantity}
+                onChange={handleInputChange}
+                min="0"
+                required
+              />
+            </div>
 
-              <div className="form-group checkbox-group">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="inStock"
-                    checked={formData.inStock}
-                    onChange={handleInputChange}
-                  />
-                  <span className="checkmark"></span>
-                  In Stock
-                </label>
+            <div className="form-group checkbox-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="in_stock"
+                  checked={formData.in_stock}
+                  onChange={handleInputChange}
+                />
+                <span className="checkmark"></span>
+                In Stock
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label>Labels</label>
+              <div className="labels-container">
+                {labels.map((label) => (
+                  <div key={label.id} className="label-item">
+                    <input
+                      type="checkbox"
+                      id={`label-${label.id}`}
+                      value={label.id}
+                      checked={selectedLabels.includes(label.id)}
+                      onChange={handleLabelChange}
+                    />
+                    <label htmlFor={`label-${label.id}`}>{label.name}</label>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -227,17 +299,6 @@ const ProductForm = () => {
                 onChange={handleInputChange}
                 rows="4"
                 required
-              ></textarea>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="ingredients">Ingredients</label>
-              <textarea
-                id="ingredients"
-                name="ingredients"
-                value={formData.ingredients}
-                onChange={handleInputChange}
-                rows="3"
               ></textarea>
             </div>
           </div>
@@ -259,20 +320,60 @@ const ProductForm = () => {
                 </label>
 
                 <div className="image-preview-container">
-                  {imagePreview.length > 0 ? (
-                    imagePreview.map((image, index) => (
-                      <div key={index} className="image-preview">
-                        <img src={image.url} alt={image.name} />
+                  {existingImages.map((image, index) => (
+                    <div key={`existing-${image.id}`} className="image-preview">
+                      <img
+                        src={image.image}
+                        alt={image.alt_text || "Product"}
+                      />
+                      <div className="image-actions">
+                        <button
+                          type="button"
+                          className={`set-primary-btn ${
+                            primaryImageId === image.id ? "active" : ""
+                          }`}
+                          onClick={() => setAsPrimary(image.id, true)}
+                          title="Set as primary image"
+                        >
+                          ⭐
+                        </button>
                         <button
                           type="button"
                           className="remove-image-btn"
-                          onClick={() => removeImage(index)}
+                          onClick={() => removeImage(index, true)}
                         >
                           ×
                         </button>
                       </div>
-                    ))
-                  ) : (
+                    </div>
+                  ))}
+
+                  {imagePreview.map((image, index) => (
+                    <div key={`new-${index}`} className="image-preview">
+                      <img src={image.url} alt="Preview" />
+                      <div className="image-actions">
+                        <button
+                          type="button"
+                          className={`set-primary-btn ${
+                            primaryImageId === `new-${index}` ? "active" : ""
+                          }`}
+                          onClick={() => setAsPrimary(image.url, false)}
+                          title="Set as primary image"
+                        >
+                          ⭐
+                        </button>
+                        <button
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={() => removeImage(index, false)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {existingImages.length === 0 && imagePreview.length === 0 && (
                     <div className="no-images">No images uploaded</div>
                   )}
                 </div>
@@ -289,8 +390,12 @@ const ProductForm = () => {
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary">
-            {isEditing ? "Update Product" : "Add Product"}
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading
+              ? "Saving..."
+              : isEditing
+              ? "Update Product"
+              : "Add Product"}
           </button>
         </div>
       </form>
