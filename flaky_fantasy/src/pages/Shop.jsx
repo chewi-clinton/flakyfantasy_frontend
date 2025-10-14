@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { productsAPI } from "../api/api";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/AppContext.jsx";
 import "../styles/Shop.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
@@ -27,14 +27,11 @@ const ShopPage = () => {
           productsAPI.getCategories(),
         ]);
 
-        // Ensure productsRes.results exists, fallback to productsRes if not
         const productsData = productsRes.results || productsRes || [];
         setProducts(productsData);
         setFilteredProducts(productsData);
 
-        // Ensure categoriesRes.results exists, fallback to categoriesRes if not
         const categoriesData = categoriesRes.results || categoriesRes || [];
-        // Ensure categoriesData is an array
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       } catch (err) {
         setError("Failed to load products");
@@ -92,7 +89,6 @@ const ShopPage = () => {
     setFilteredProducts(result);
   }, [products, selectedFilter, categories]);
 
-  // Ensure filterOptions is always an array
   const filterOptions = [
     "All",
     ...(Array.isArray(categories)
@@ -107,7 +103,6 @@ const ShopPage = () => {
 
   const handleAddToCart = (product) => {
     addToCart(product);
-    alert(`Added ${product.name} to cart!`);
   };
 
   const handleProductClick = (id) => {

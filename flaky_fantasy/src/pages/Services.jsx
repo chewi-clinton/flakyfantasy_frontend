@@ -3,6 +3,15 @@ import "../styles/Services.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
+import cakeIcon from "../assets/homedelivery.png";
+import cakeImage from "../assets/homedelivery.png";
+import cateringIcon from "../assets/homedelivery.png";
+import cateringImage from "../assets/homedelivery.png";
+import foodTrayIcon from "../assets/homedelivery.png";
+import foodTrayImage from "../assets/homedelivery.png";
+import deliveryIcon from "../assets/homedelivery.png";
+import deliveryImage from "../assets/homedelivery.png";
+
 const Services = () => {
   return (
     <>
@@ -20,7 +29,7 @@ const Services = () => {
           <div className="service-item">
             <div className="service-text">
               <img
-                src="cake-icon.png"
+                src={cakeIcon}
                 alt="Cake Icon"
                 className="service-icon-img"
               />
@@ -33,17 +42,18 @@ const Services = () => {
               <button className="book-btn">Book a Service</button>
             </div>
             <div className="service-image">
-              <img src="cake-image.jpg" alt="Custom Cake" />
+              <img src={cakeImage} alt="Custom Cake" />
             </div>
           </div>
 
+          {/* Repeat for other services using imported variables */}
           <div className="service-item reverse">
             <div className="service-image">
-              <img src="catering-image.jpg" alt="Event Catering" />
+              <img src={cateringImage} alt="Event Catering" />
             </div>
             <div className="service-text">
               <img
-                src="catering-icon.png"
+                src={cateringIcon}
                 alt="Catering Icon"
                 className="service-icon-img"
               />
@@ -60,30 +70,31 @@ const Services = () => {
           <div className="service-item">
             <div className="service-text">
               <img
-                src="pastry-icon.png"
-                alt="Pastry Icon"
+                src={foodTrayIcon}
+                alt="Food Tray Icon"
                 className="service-icon-img"
               />
-              <h2>Pastry Buffets</h2>
+              <h2>Food Trays</h2>
               <p>
-                Treat your guests to a delectable array of our finest pastries,
-                macarons, and tarts. Perfect for weddings, corporate events, or
-                any gathering that deserves a touch of sweetness.
+                Delight your guests with a diverse selection of our finest food
+                trays, featuring an assortment of savory and sweet options.
+                Perfect for weddings, corporate events, or any gathering that
+                deserves a touch of culinary excellence.
               </p>
               <button className="book-btn">Book a Service</button>
             </div>
             <div className="service-image">
-              <img src="pastry-image.jpg" alt="Pastry Buffets" />
+              <img src={foodTrayImage} alt="Food Trays" />
             </div>
           </div>
 
           <div className="service-item reverse">
             <div className="service-image">
-              <img src="delivery-image.jpg" alt="Home Delivery" />
+              <img src={deliveryImage} alt="Home Delivery" />
             </div>
             <div className="service-text">
               <img
-                src="delivery-icon.png"
+                src={deliveryIcon}
                 alt="Delivery Icon"
                 className="service-icon-img"
               />

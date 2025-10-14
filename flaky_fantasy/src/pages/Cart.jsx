@@ -1,35 +1,18 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/Cart.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import { useApp } from "../context/AppContext.jsx";
 
 const CartPage = () => {
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
+  const { cart, removeFromCart, updateCartItem, getCartTotal, clearCart } =
+    useApp();
 
-  const cartItems = [
-    {
-      id: 1,
-      name: "Chocolate Fudge Cake",
-      price: 35.0,
-      quantity: 1,
-      image: "path-to-image-1.jpg",
-    },
-    {
-      id: 2,
-      name: "Almond Croissant",
-      price: 4.5,
-      quantity: 2,
-      image: "path-to-image-2.jpg",
-    },
-  ];
-
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const discount = discountApplied ? 5.0 : 0;
-  const total = subtotal - discount;
+  const discount = discountApplied ? 3000 : 0;
+  const total = getCartTotal() - discount;
 
   const handleApplyDiscount = () => {
     if (discountCode.trim() === "DISCOUNT5") {
@@ -43,9 +26,27 @@ const CartPage = () => {
     alert("Proceeding to checkout...");
   };
 
-  const handleContinueShopping = () => {
-    alert("Continuing shopping...");
+  const formatCurrency = (amount) => {
+    return `FCFA ${amount.toLocaleString()}`;
   };
+
+  if (cart.length === 0) {
+    return (
+      <>
+        <Header />
+        <div className="cart-page">
+          <div className="empty-cart">
+            <h1>Your Cart is Empty</h1>
+            <p>Looks like you haven't added any items to your cart yet.</p>
+            <Link to="/shop" className="continue-shopping-btn">
+              Continue Shopping
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -55,21 +56,46 @@ const CartPage = () => {
 
         <div className="cart-container">
           <div className="cart-items">
-            {cartItems.map((item) => (
+            {cart.map((item) => (
               <div key={item.id} className="cart-item">
                 <div className="item-image">
-                  <img src={item.image} alt={item.name} />
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} />
+                  ) : (
+                    <div className="no-image">No Image</div>
+                  )}
                 </div>
                 <div className="item-details">
                   <h3 className="item-name">{item.name}</h3>
-                  <div className="item-price">${item.price.toFixed(2)}</div>
+                  <div className="item-price">{formatCurrency(item.price)}</div>
                 </div>
                 <div className="item-quantity">
-                  <div className="quantity-display">Qty: {item.quantity}</div>
+                  <div className="quantity-controls">
+                    <button
+                      className="quantity-btn"
+                      onClick={() => updateCartItem(item.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                    >
+                      -
+                    </button>
+                    <span className="quantity-display">{item.quantity}</span>
+                    <button
+                      className="quantity-btn"
+                      onClick={() => updateCartItem(item.id, item.quantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
                 <div className="item-total">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {formatCurrency(item.price * item.quantity)}
                 </div>
+                <button
+                  className="remove-btn"
+                  onClick={() => removeFromCart(item.id)}
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
@@ -78,15 +104,17 @@ const CartPage = () => {
             <h2 className="summary-title">Order Summary</h2>
             <div className="summary-row">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>{formatCurrency(getCartTotal())}</span>
             </div>
             <div className="summary-row">
               <span>Discount</span>
-              <span className="discount-amount">-${discount.toFixed(2)}</span>
+              <span className="discount-amount">
+                -{formatCurrency(discount)}
+              </span>
             </div>
             <div className="summary-row total-row">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{formatCurrency(total)}</span>
             </div>
 
             <div className="discount-section">
@@ -110,11 +138,8 @@ const CartPage = () => {
               Proceed to Checkout
             </button>
 
-            <button
-              className="continue-shopping-btn"
-              onClick={handleContinueShopping}
-            >
-              Continue Shopping
+            <button className="clear-cart-btn" onClick={clearCart}>
+              Clear Cart
             </button>
           </div>
         </div>

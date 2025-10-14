@@ -1,5 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import Header from "./components/Header.jsx";
+import Footer from "./components/Footer.jsx";
 import HomePage from "./components/Home.jsx";
 import ShopPage from "./pages/Shop.jsx";
 import CartPage from "./pages/Cart.jsx";
@@ -18,6 +25,23 @@ import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import { AppProvider } from "./context/AppContext.jsx";
 import { AdminProvider } from "./context/AdminContext.jsx";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute.jsx";
+import Toast from "./components/Toast.jsx";
+
+const MainLayout = () => {
+  return (
+    <>
+      <Outlet />
+    </>
+  );
+};
+
+const AdminLayout = () => {
+  return (
+    <AdminProvider>
+      <Outlet />
+    </AdminProvider>
+  );
+};
 
 function App() {
   return (
@@ -25,87 +49,83 @@ function App() {
       <BrowserRouter>
         <div className="App">
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/shop" element={<ShopPage />} />
-            <Route path="/product-details" element={<ProductDetail />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/order-confirmation" element={<OrderConfirmation />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="/terms" element={<TermsConditions />} />
-            <Route path="/Admin-login" element={<AdminLogin />} />
-            <Route
-              path="/admin"
-              element={
-                <AdminProvider>
+            {/* Non-admin routes with MainLayout */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/shop" element={<ShopPage />} />
+              <Route path="/product-details" element={<ProductDetail />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route
+                path="/order-confirmation"
+                element={<OrderConfirmation />}
+              />
+              <Route path="/services" element={<Services />} />
+              <Route path="/contact" element={<ContactUs />} />
+              <Route path="/terms" element={<TermsConditions />} />
+              <Route path="/Admin-login" element={<AdminLogin />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+
+            {/* Admin routes with AdminLayout */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route
+                index
+                element={
                   <ProtectedAdminRoute>
                     <AdminDashboard />
                   </ProtectedAdminRoute>
-                </AdminProvider>
-              }
-            />
-            <Route
-              path="/admin/products"
-              element={
-                <AdminProvider>
+                }
+              />
+              <Route
+                path="products"
+                element={
                   <ProtectedAdminRoute>
                     <ProductList />
                   </ProtectedAdminRoute>
-                </AdminProvider>
-              }
-            />
-            <Route
-              path="/admin/products/new"
-              element={
-                <AdminProvider>
+                }
+              />
+              <Route
+                path="products/new"
+                element={
                   <ProtectedAdminRoute>
                     <ProductForm />
                   </ProtectedAdminRoute>
-                </AdminProvider>
-              }
-            />
-            <Route
-              path="/admin/products/edit/:id"
-              element={
-                <AdminProvider>
+                }
+              />
+              <Route
+                path="products/edit/:id"
+                element={
                   <ProtectedAdminRoute>
                     <ProductForm />
                   </ProtectedAdminRoute>
-                </AdminProvider>
-              }
-            />
-            <Route
-              path="/admin/categories"
-              element={
-                <AdminProvider>
+                }
+              />
+              <Route
+                path="categories"
+                element={
                   <ProtectedAdminRoute>
                     <CategoryList />
                   </ProtectedAdminRoute>
-                </AdminProvider>
-              }
-            />
-            <Route
-              path="/admin/discounts"
-              element={
-                <AdminProvider>
+                }
+              />
+              <Route
+                path="discounts"
+                element={
                   <ProtectedAdminRoute>
                     <DiscountList />
                   </ProtectedAdminRoute>
-                </AdminProvider>
-              }
-            />
-            <Route
-              path="/admin/services"
-              element={
-                <AdminProvider>
+                }
+              />
+              <Route
+                path="services"
+                element={
                   <ProtectedAdminRoute>
                     <ServiceList />
                   </ProtectedAdminRoute>
-                </AdminProvider>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
+                }
+              />
+            </Route>
           </Routes>
         </div>
       </BrowserRouter>
