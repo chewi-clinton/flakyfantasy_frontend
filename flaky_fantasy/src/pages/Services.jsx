@@ -11,6 +11,8 @@ import foodTrayIcon from "../assets/homedelivery.png";
 import foodTrayImage from "../assets/homedelivery.png";
 import deliveryIcon from "../assets/homedelivery.png";
 import deliveryImage from "../assets/homedelivery.png";
+import chefIcon from "../assets/homedelivery.png";
+import chefImage from "../assets/homedelivery.png";
 
 const Services = () => {
   return (
@@ -46,7 +48,6 @@ const Services = () => {
             </div>
           </div>
 
-          {/* Repeat for other services using imported variables */}
           <div className="service-item reverse">
             <div className="service-image">
               <img src={cateringImage} alt="Event Catering" />
@@ -105,6 +106,28 @@ const Services = () => {
                 fresh and ready to be devoured.
               </p>
               <button className="book-btn">Book a Service</button>
+            </div>
+          </div>
+
+          <div className="service-item">
+            <div className="service-text">
+              <img
+                src={chefIcon}
+                alt="Chef Icon"
+                className="service-icon-img"
+              />
+              <h2>Private Chef</h2>
+              <p>
+                Experience authentic African cuisine in the comfort of your home
+                with our private chef service. Specializing in traditional
+                dishes like achu, fried rice, ndole, and more, i bring the rich
+                flavors of Africa to your table for an unforgettable dining
+                experience.
+              </p>
+              <button className="book-btn">Book a Service</button>
+            </div>
+            <div className="service-image">
+              <img src={chefImage} alt="Private Chef" />
             </div>
           </div>
         </div>
