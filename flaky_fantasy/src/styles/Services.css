@@ -191,6 +191,6 @@
   }
 
   .service-image img {
-    max-height: 250px; /* Adjusted for smaller screens */
+    max-height: 250px;
   }
 }
