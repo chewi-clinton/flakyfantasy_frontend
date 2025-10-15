@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
-import { adminAuthAPI } from "../api/AdminApi.jsx";
+import { adminAuthAPI } from "../api/AdminApi";
 
 const AdminContext = createContext();
 
@@ -68,7 +68,7 @@ export const AdminProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.detail || "Login failed",
+        error: error.response?.data?.error || "Login failed",
       };
     }
   };
@@ -92,4 +92,10 @@ export const AdminProvider = ({ children }) => {
   );
 };
 
-export const useAdmin = () => useContext(AdminContext);
+export const useAdmin = () => {
+  const context = useContext(AdminContext);
+  if (!context) {
+    throw new Error("useAdmin must be used within an AdminProvider");
+  }
+  return context;
+};

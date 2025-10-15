@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { productsAPI } from "../api/api";
+import { productsAPI, getImageUrl } from "../api/api"; // Import getImageUrl
 import { useApp } from "../context/AppContext.jsx";
 import "../styles/Shop.css";
 import Footer from "../components/Footer";
@@ -15,6 +15,7 @@ const ShopPage = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imageErrors, setImageErrors] = useState({});
   const navigate = useNavigate();
   const { addToCart } = useApp();
 
@@ -109,6 +110,13 @@ const ShopPage = () => {
     navigate(`/product-details?id=${id}`);
   };
 
+  const handleImageError = (productId) => {
+    setImageErrors((prev) => ({
+      ...prev,
+      [productId]: true,
+    }));
+  };
+
   const getTagClass = (tag) => {
     if (!tag) return "";
 
@@ -200,11 +208,16 @@ const ShopPage = () => {
                   {product.images &&
                   Array.isArray(product.images) &&
                   product.images.length > 0 ? (
-                    <img
-                      src={product.images[0].image}
-                      alt={product.name}
-                      className="product-image"
-                    />
+                    imageErrors[product.id] ? (
+                      <div className="no-image">Image not available</div>
+                    ) : (
+                      <img
+                        src={getImageUrl(product.images[0].image)}
+                        alt={product.name}
+                        className="product-image"
+                        onError={() => handleImageError(product.id)}
+                      />
+                    )
                   ) : (
                     <div className="no-image">No Image</div>
                   )}

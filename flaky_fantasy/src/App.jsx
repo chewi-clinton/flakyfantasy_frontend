@@ -48,25 +48,8 @@ function App() {
     <AppProvider>
       <BrowserRouter>
         <div className="App">
+          <Toast />
           <Routes>
-            {/* Non-admin routes with MainLayout */}
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/shop" element={<ShopPage />} />
-              <Route path="/product-details" element={<ProductDetail />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route
-                path="/order-confirmation"
-                element={<OrderConfirmation />}
-              />
-              <Route path="/services" element={<Services />} />
-              <Route path="/contact" element={<ContactUs />} />
-              <Route path="/terms" element={<TermsConditions />} />
-              <Route path="/Admin-login" element={<AdminLogin />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Route>
-
             {/* Admin routes with AdminLayout */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route
@@ -77,6 +60,7 @@ function App() {
                   </ProtectedAdminRoute>
                 }
               />
+              <Route path="login" element={<AdminLogin />} />
               <Route
                 path="products"
                 element={
@@ -125,6 +109,23 @@ function App() {
                   </ProtectedAdminRoute>
                 }
               />
+            </Route>
+
+            {/* Non-admin routes with MainLayout */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/shop" element={<ShopPage />} />
+              <Route path="/product-details" element={<ProductDetail />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route
+                path="/order-confirmation"
+                element={<OrderConfirmation />}
+              />
+              <Route path="/services" element={<Services />} />
+              <Route path="/contact" element={<ContactUs />} />
+              <Route path="/terms" element={<TermsConditions />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
         </div>

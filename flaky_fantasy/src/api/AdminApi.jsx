@@ -100,9 +100,27 @@ export const adminProductsAPI = {
     return response.data;
   },
 
+  // FIXED: Ensure getCategories always returns an array
   getCategories: async () => {
-    const response = await adminApi.get("/categories/");
-    return response.data;
+    try {
+      const response = await adminApi.get("/categories/");
+      const data = response.data;
+
+      // Handle different response formats
+      if (Array.isArray(data)) {
+        return data;
+      } else if (data && data.results && Array.isArray(data.results)) {
+        return data.results;
+      } else if (data && Array.isArray(data.categories)) {
+        return data.categories;
+      } else {
+        console.warn("Unexpected categories response format:", data);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      return []; // Return empty array on error
+    }
   },
 
   createCategory: async (categoryData) => {

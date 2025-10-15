@@ -1,6 +1,22 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const BASE_URL = "http://localhost:8000";
+
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
+
+  if (imagePath.startsWith("http")) {
+    return imagePath;
+  }
+
+  const normalizedPath = imagePath.startsWith("/")
+    ? imagePath.slice(1)
+    : imagePath;
+
+  return `${BASE_URL}/media/${normalizedPath}`;
+};
+
+const API_URL = `${BASE_URL}/api`;
 
 const api = axios.create({
   baseURL: API_URL,
@@ -55,11 +71,16 @@ export const cartAPI = {
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
+      // Get the full image URL
+      const imageUrl = product.images?.[0]?.image
+        ? getImageUrl(product.images[0].image)
+        : "";
+
       cart.push({
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.images?.[0]?.image || "",
+        image: imageUrl, // Store the full URL
         quantity,
         options,
       });
@@ -69,23 +90,29 @@ export const cartAPI = {
     return cart;
   },
 
-  updateCartItem: (index, quantity) => {
+  updateCartItem: (productId, quantity) => {
     const cart = cartAPI.getCart();
-    if (cart[index]) {
+    const itemIndex = cart.findIndex((item) => item.id === productId);
+
+    if (itemIndex !== -1) {
       if (quantity > 0) {
-        cart[index].quantity = quantity;
+        cart[itemIndex].quantity = quantity;
       } else {
-        cart.splice(index, 1);
+        cart.splice(itemIndex, 1);
       }
       localStorage.setItem("cart", JSON.stringify(cart));
     }
     return cart;
   },
 
-  removeFromCart: (index) => {
+  removeFromCart: (productId) => {
     const cart = cartAPI.getCart();
-    cart.splice(index, 1);
-    localStorage.setItem("cart", JSON.stringify(cart));
+    const itemIndex = cart.findIndex((item) => item.id === productId);
+
+    if (itemIndex !== -1) {
+      cart.splice(itemIndex, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
     return cart;
   },
 
@@ -94,5 +121,8 @@ export const cartAPI = {
     return [];
   },
 };
+
+// Export the getImageUrl function for use in components
+export { getImageUrl };
 
 export default api;

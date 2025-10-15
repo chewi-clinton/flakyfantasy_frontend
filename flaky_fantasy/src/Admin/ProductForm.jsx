@@ -19,7 +19,7 @@ const ProductForm = () => {
   });
 
   const [categories, setCategories] = useState([]);
-  const [labels, setLabels] = useState([]);
+  const [labels, setLabels] = useState([]); // Initialize as empty array
   const [selectedLabels, setSelectedLabels] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
@@ -37,8 +37,9 @@ const ProductForm = () => {
           adminProductsAPI.getLabels(),
         ]);
 
-        setCategories(categoriesRes);
-        setLabels(labelsRes);
+        // Ensure responses are arrays before setting state
+        setCategories(Array.isArray(categoriesRes) ? categoriesRes : []);
+        setLabels(Array.isArray(labelsRes) ? labelsRes : []);
 
         if (isEditing) {
           const productRes = await adminProductsAPI.getProduct(id);
@@ -48,22 +49,35 @@ const ProductForm = () => {
             name: product.name,
             description: product.description,
             price: product.price,
-            category: product.category.id,
+            category: product.category?.id || "",
             stock_quantity: product.stock_quantity,
             in_stock: product.in_stock,
-            labels: product.labels.map((label) => label.id),
+            labels: Array.isArray(product.labels)
+              ? product.labels.map((label) => label.id)
+              : [],
           });
 
-          setSelectedLabels(product.labels.map((label) => label.id));
-          setExistingImages(product.images || []);
+          setSelectedLabels(
+            Array.isArray(product.labels)
+              ? product.labels.map((label) => label.id)
+              : []
+          );
+          setExistingImages(
+            Array.isArray(product.images) ? product.images : []
+          );
 
-          const primaryImage = product.images.find((img) => img.is_primary);
+          const primaryImage = Array.isArray(product.images)
+            ? product.images.find((img) => img.is_primary)
+            : null;
           if (primaryImage) {
             setPrimaryImageId(primaryImage.id);
           }
         }
       } catch (err) {
         setError("Failed to load data");
+        // Set empty arrays on error to prevent map errors
+        setCategories([]);
+        setLabels([]);
       } finally {
         setLoading(false);
       }
@@ -224,11 +238,12 @@ const ProductForm = () => {
                 required
               >
                 <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
+                {Array.isArray(categories) &&
+                  categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
               </select>
             </div>
 
@@ -275,18 +290,22 @@ const ProductForm = () => {
             <div className="form-group">
               <label>Labels</label>
               <div className="labels-container">
-                {labels.map((label) => (
-                  <div key={label.id} className="label-item">
-                    <input
-                      type="checkbox"
-                      id={`label-${label.id}`}
-                      value={label.id}
-                      checked={selectedLabels.includes(label.id)}
-                      onChange={handleLabelChange}
-                    />
-                    <label htmlFor={`label-${label.id}`}>{label.name}</label>
-                  </div>
-                ))}
+                {Array.isArray(labels) && labels.length > 0 ? (
+                  labels.map((label) => (
+                    <div key={label.id} className="label-item">
+                      <input
+                        type="checkbox"
+                        id={`label-${label.id}`}
+                        value={label.id}
+                        checked={selectedLabels.includes(label.id)}
+                        onChange={handleLabelChange}
+                      />
+                      <label htmlFor={`label-${label.id}`}>{label.name}</label>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-labels">No labels available</p>
+                )}
               </div>
             </div>
 
@@ -320,58 +339,63 @@ const ProductForm = () => {
                 </label>
 
                 <div className="image-preview-container">
-                  {existingImages.map((image, index) => (
-                    <div key={`existing-${image.id}`} className="image-preview">
-                      <img
-                        src={image.image}
-                        alt={image.alt_text || "Product"}
-                      />
-                      <div className="image-actions">
-                        <button
-                          type="button"
-                          className={`set-primary-btn ${
-                            primaryImageId === image.id ? "active" : ""
-                          }`}
-                          onClick={() => setAsPrimary(image.id, true)}
-                          title="Set as primary image"
-                        >
-                          ⭐
-                        </button>
-                        <button
-                          type="button"
-                          className="remove-image-btn"
-                          onClick={() => removeImage(index, true)}
-                        >
-                          ×
-                        </button>
+                  {Array.isArray(existingImages) &&
+                    existingImages.map((image, index) => (
+                      <div
+                        key={`existing-${image.id}`}
+                        className="image-preview"
+                      >
+                        <img
+                          src={image.image}
+                          alt={image.alt_text || "Product"}
+                        />
+                        <div className="image-actions">
+                          <button
+                            type="button"
+                            className={`set-primary-btn ${
+                              primaryImageId === image.id ? "active" : ""
+                            }`}
+                            onClick={() => setAsPrimary(image.id, true)}
+                            title="Set as primary image"
+                          >
+                            ⭐
+                          </button>
+                          <button
+                            type="button"
+                            className="remove-image-btn"
+                            onClick={() => removeImage(index, true)}
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
 
-                  {imagePreview.map((image, index) => (
-                    <div key={`new-${index}`} className="image-preview">
-                      <img src={image.url} alt="Preview" />
-                      <div className="image-actions">
-                        <button
-                          type="button"
-                          className={`set-primary-btn ${
-                            primaryImageId === `new-${index}` ? "active" : ""
-                          }`}
-                          onClick={() => setAsPrimary(image.url, false)}
-                          title="Set as primary image"
-                        >
-                          ⭐
-                        </button>
-                        <button
-                          type="button"
-                          className="remove-image-btn"
-                          onClick={() => removeImage(index, false)}
-                        >
-                          ×
-                        </button>
+                  {Array.isArray(imagePreview) &&
+                    imagePreview.map((image, index) => (
+                      <div key={`new-${index}`} className="image-preview">
+                        <img src={image.url} alt="Preview" />
+                        <div className="image-actions">
+                          <button
+                            type="button"
+                            className={`set-primary-btn ${
+                              primaryImageId === `new-${index}` ? "active" : ""
+                            }`}
+                            onClick={() => setAsPrimary(image.url, false)}
+                            title="Set as primary image"
+                          >
+                            ⭐
+                          </button>
+                          <button
+                            type="button"
+                            className="remove-image-btn"
+                            onClick={() => removeImage(index, false)}
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
 
                   {existingImages.length === 0 && imagePreview.length === 0 && (
                     <div className="no-images">No images uploaded</div>

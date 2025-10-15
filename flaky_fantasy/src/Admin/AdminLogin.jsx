@@ -9,22 +9,12 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const adminContext = useAdmin();
-
-  // Safely destructure with fallback values
-  const login =
-    adminContext?.login ||
-    (() =>
-      Promise.resolve({
-        success: false,
-        error: "Authentication service unavailable",
-      }));
-  const isAuthenticated = adminContext?.isAuthenticated || false;
+  const { login, isAuthenticated } = useAdmin();
 
   useEffect(() => {
     document.getElementById("username-input")?.focus();
     if (isAuthenticated) {
-      navigate("/admin/dashboard");
+      navigate("/admin"); // Fixed case sensitivity
     }
   }, [isAuthenticated, navigate]);
 
@@ -35,16 +25,36 @@ const AdminLogin = () => {
 
     try {
       const result = await login({ username, password });
-      if (result.success) {
-        navigate("/admin/dashboard");
+      if (!result.success) {
+        setError(result.error);
       } else {
-        setError(
-          result.error || "Login failed. Please check your credentials."
-        );
+        navigate("/admin"); // Consistent with App.jsx routing
       }
     } catch (err) {
-      setError("An error occurred during login. Please try again.");
-      console.error(err);
+      console.error("Login error:", err);
+      if (err.response) {
+        const status = err.response.status;
+        const errorData = err.response.data;
+        if (status === 400) {
+          setError("Please enter both username and password");
+        } else if (status === 401) {
+          setError("Invalid username or password");
+        } else if (status === 403) {
+          setError("User is not an admin");
+        } else if (status === 500) {
+          setError(errorData.error || "Server error. Please try again later.");
+        } else {
+          setError(
+            `Login failed: ${
+              errorData.error || errorData.detail || "Unknown error"
+            }`
+          );
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection.");
+      } else {
+        setError(`An error occurred: ${err.message}`);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +67,7 @@ const AdminLogin = () => {
           <div className="logo-container">
             <img
               src="./src/assets/logo.png"
-              alt="Flaky Fantasy"
+              alt="CareBridge Admin"
               className="logo"
             />
           </div>
@@ -67,8 +77,8 @@ const AdminLogin = () => {
             <span className="title-word">Back</span>
           </h1>
           <p className="subtitle">
-            Crafting a delightful online haven for cake and pastry delights,
-            this is the Flaky Fantasy admin gateway.
+            Secure admin gateway for managing CareBridge's healthcare services
+            and analytics.
           </p>
           <form className="form" onSubmit={handleSubmit}>
             {error && <div className="error-message">{error}</div>}

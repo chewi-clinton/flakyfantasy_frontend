@@ -4,10 +4,12 @@ import "../styles/Cart.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useApp } from "../context/AppContext.jsx";
+import { getImageUrl } from "../api/api"; // Import getImageUrl
 
 const CartPage = () => {
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
+  const [imageErrors, setImageErrors] = useState({});
   const { cart, removeFromCart, updateCartItem, getCartTotal, clearCart } =
     useApp();
 
@@ -24,6 +26,13 @@ const CartPage = () => {
 
   const handleProceedToCheckout = () => {
     alert("Proceeding to checkout...");
+  };
+
+  const handleImageError = (itemId) => {
+    setImageErrors((prev) => ({
+      ...prev,
+      [itemId]: true,
+    }));
   };
 
   const formatCurrency = (amount) => {
@@ -60,7 +69,15 @@ const CartPage = () => {
               <div key={item.id} className="cart-item">
                 <div className="item-image">
                   {item.image ? (
-                    <img src={item.image} alt={item.name} />
+                    imageErrors[item.id] ? (
+                      <div className="no-image">Image not available</div>
+                    ) : (
+                      <img
+                        src={getImageUrl(item.image)}
+                        alt={item.name}
+                        onError={() => handleImageError(item.id)}
+                      />
+                    )
                   ) : (
                     <div className="no-image">No Image</div>
                   )}
