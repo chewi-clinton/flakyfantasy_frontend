@@ -156,84 +156,81 @@ const ProductList = () => {
         </div>
       </div>
 
-      <div className="product-table-container">
-        <table className="product-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <tr key={product.id}>
-                  <td className="product-info">
-                    <div className="product-image">
-                      {product.images && product.images.length > 0 ? (
-                        <img src={product.images[0].image} alt={product.name} />
-                      ) : (
-                        <div className="no-image">No Image</div>
-                      )}
-                    </div>
-                    <div className="product-name">{product.name}</div>
-                  </td>
-                  <td>{product.category.name}</td>
-                  <td>{product.price.toLocaleString()} FCFA</td>
-                  <td>{product.stock_quantity}</td>
-                  <td>
-                    <span
-                      className={`status-badge ${
-                        product.in_stock ? "in-stock" : "sold-out"
-                      }`}
-                    >
-                      {product.in_stock ? "In Stock" : "Sold Out"}
-                    </span>
-                  </td>
-                  <td className="actions">
-                    <Link
-                      to={`/admin/products/edit/${product.id}`}
-                      className="action-btn edit-btn"
-                    >
-                      ✏️
-                    </Link>
-                    <button
-                      className={`action-btn ${
-                        product.in_stock ? "stock-out-btn" : "stock-in-btn"
-                      }`}
-                      onClick={() =>
-                        toggleStockStatus(product.id, product.in_stock)
-                      }
-                      title={
-                        product.in_stock
-                          ? "Mark as out of stock"
-                          : "Mark as in stock"
-                      }
-                    >
-                      {product.in_stock ? "📦" : "✅"}
-                    </button>
-                    <button
-                      className="action-btn delete-btn"
-                      onClick={() => deleteProduct(product.id)}
-                    >
-                      🗑️
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="no-results">
-                  No products found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="products-grid">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <div className="product-card" key={product.id}>
+              <div className="product-image-container">
+                {product.images && product.images.length > 0 ? (
+                  <img
+                    src={product.images[0].image}
+                    alt={product.name}
+                    className="product-image"
+                  />
+                ) : (
+                  <div className="no-image">No Image</div>
+                )}
+                <span
+                  className={`product-badge ${
+                    product.in_stock ? "in-stock" : "sold-out"
+                  }`}
+                >
+                  {product.in_stock ? "In Stock" : "Sold Out"}
+                </span>
+              </div>
+
+              <div className="product-details">
+                <div className="product-header">
+                  <h3 className="product-name">{product.name}</h3>
+                  <span className="product-category">
+                    {product.category.name}
+                  </span>
+                </div>
+
+                <div className="product-info-row">
+                  <span className="product-info-label">Price:</span>
+                  <span className="product-price">
+                    {product.price.toLocaleString()} FCFA
+                  </span>
+                </div>
+
+                <div className="product-info-row">
+                  <span className="product-info-label">Stock:</span>
+                  <span className="product-info-value">
+                    {product.stock_quantity}
+                  </span>
+                </div>
+
+                <div className="product-actions">
+                  <Link
+                    to={`/admin/products/edit/${product.id}`}
+                    className="action-btn edit-btn"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    className={`action-btn stock-btn ${
+                      product.in_stock ? "stock-out-btn" : "stock-in-btn"
+                    }`}
+                    onClick={() =>
+                      toggleStockStatus(product.id, product.in_stock)
+                    }
+                  >
+                    {product.in_stock ? "Out of Stock" : "In Stock"}
+                  </button>
+                  <button
+                    className="action-btn delete-btn"
+                    onClick={() => deleteProduct(product.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="no-results">No products found</div>
+        )}
       </div>
     </div>
   );
