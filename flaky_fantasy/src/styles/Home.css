@@ -82,7 +82,7 @@
   padding: 14px 28px;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 50px;
+  border-radius: 60px !important;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
@@ -122,7 +122,7 @@
 .btn-secondary {
   background-color: transparent;
   color: white;
-  border: 2px solid white;
+  border: 2px solid white !important;
 }
 
 .btn-secondary:hover {
@@ -380,7 +380,7 @@
   padding: 16px 40px;
   font-size: 1.1rem;
   font-weight: 600;
-  border-radius: 50px;
+  border-radius: 60px !important;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
