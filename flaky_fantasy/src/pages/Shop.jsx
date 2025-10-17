@@ -19,6 +19,11 @@ const ShopPage = () => {
   const navigate = useNavigate();
   const { addToCart } = useApp();
 
+  // Pagination settings
+  const productsPerPage = 9; // Number of products per page
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPageProducts, setCurrentPageProducts] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,7 +93,25 @@ const ShopPage = () => {
     }
 
     setFilteredProducts(result);
+    setActivePage(1); // Reset to first page when filter changes
   }, [products, selectedFilter, categories]);
+
+  // Update pagination when filtered products change
+  useEffect(() => {
+    // Calculate total pages
+    const pages = Math.ceil(filteredProducts.length / productsPerPage);
+    setTotalPages(pages);
+
+    // Ensure active page is within valid range
+    if (activePage > pages && pages > 0) {
+      setActivePage(pages);
+    }
+
+    // Get products for current page
+    const startIndex = (activePage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    setCurrentPageProducts(filteredProducts.slice(startIndex, endIndex));
+  }, [filteredProducts, activePage, productsPerPage]);
 
   const filterOptions = [
     "All",
@@ -136,6 +159,110 @@ const ShopPage = () => {
   const handleFilterSelect = (filter) => {
     setSelectedFilter(filter);
     setShowDropdown(false);
+  };
+
+  const handlePageChange = (page) => {
+    setActivePage(page);
+    // Scroll to top of products section
+    window.scrollTo({
+      top: document.querySelector(".products-grid").offsetTop - 100,
+      behavior: "smooth",
+    });
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pageNumbers = [];
+    const maxVisiblePages = 5; // Maximum number of page buttons to show
+
+    let startPage = Math.max(1, activePage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Previous button
+    pageNumbers.push(
+      <button
+        key="prev"
+        className={`page-btn ${activePage === 1 ? "disabled" : ""}`}
+        onClick={() => handlePageChange(activePage - 1)}
+        disabled={activePage === 1}
+      >
+        Previous
+      </button>
+    );
+
+    // First page
+    if (startPage > 1) {
+      pageNumbers.push(
+        <button
+          key={1}
+          className={`page-btn ${activePage === 1 ? "active" : ""}`}
+          onClick={() => handlePageChange(1)}
+        >
+          1
+        </button>
+      );
+
+      if (startPage > 2) {
+        pageNumbers.push(
+          <span key="ellipsis1" className="ellipsis">
+            ...
+          </span>
+        );
+      }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`page-btn ${activePage === i ? "active" : ""}`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Last page
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbers.push(
+          <span key="ellipsis2" className="ellipsis">
+            ...
+          </span>
+        );
+      }
+
+      pageNumbers.push(
+        <button
+          key={totalPages}
+          className={`page-btn ${activePage === totalPages ? "active" : ""}`}
+          onClick={() => handlePageChange(totalPages)}
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    // Next button
+    pageNumbers.push(
+      <button
+        key="next"
+        className={`page-btn ${activePage === totalPages ? "disabled" : ""}`}
+        onClick={() => handlePageChange(activePage + 1)}
+        disabled={activePage === totalPages}
+      >
+        Next
+      </button>
+    );
+
+    return <div className="pagination">{pageNumbers}</div>;
   };
 
   if (loading)
@@ -196,9 +323,17 @@ const ShopPage = () => {
           </div>
         </div>
 
+        <div className="products-info">
+          <p>
+            Showing {currentPageProducts.length} of {filteredProducts.length}{" "}
+            products
+          </p>
+        </div>
+
         <div className="products-grid">
-          {Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
+          {Array.isArray(currentPageProducts) &&
+          currentPageProducts.length > 0 ? (
+            currentPageProducts.map((product) => (
               <div key={product.id} className="product-card">
                 <div
                   className="product-image-container"
@@ -259,32 +394,7 @@ const ShopPage = () => {
           )}
         </div>
 
-        <div className="pagination">
-          <button
-            className={`page-btn ${activePage === 1 ? "active" : ""}`}
-            onClick={() => setActivePage(1)}
-          >
-            1
-          </button>
-          <button
-            className={`page-btn ${activePage === 2 ? "active" : ""}`}
-            onClick={() => setActivePage(2)}
-          >
-            2
-          </button>
-          <button
-            className={`page-btn ${activePage === 3 ? "active" : ""}`}
-            onClick={() => setActivePage(3)}
-          >
-            3
-          </button>
-          <button
-            className="page-btn next"
-            onClick={() => setActivePage((prev) => Math.min(prev + 1, 3))}
-          >
-            Next
-          </button>
-        </div>
+        {renderPagination()}
       </div>
       <Footer />
     </>

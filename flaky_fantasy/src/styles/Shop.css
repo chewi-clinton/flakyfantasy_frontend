@@ -317,3 +317,19 @@
     padding: 8px 10px;
   }
 }
+.products-info {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.products-info p {
+  margin: 0;
+  padding: 8px 16px;
+  background-color: #f9f5f0;
+  border-radius: 20px;
+  border: 1px solid #f0e6d9;
+}
