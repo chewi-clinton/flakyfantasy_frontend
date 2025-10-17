@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import logos from "../assets/logo.png";
 import { useAdmin } from "../context/AdminContext";
 import "../styles/AdminLogin.css";
 
@@ -14,7 +15,7 @@ const AdminLogin = () => {
   useEffect(() => {
     document.getElementById("username-input")?.focus();
     if (isAuthenticated) {
-      navigate("/admin"); // Fixed case sensitivity
+      navigate("/admin");
     }
   }, [isAuthenticated, navigate]);
 
@@ -28,7 +29,7 @@ const AdminLogin = () => {
       if (!result.success) {
         setError(result.error);
       } else {
-        navigate("/admin"); // Consistent with App.jsx routing
+        navigate("/admin");
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -65,11 +66,7 @@ const AdminLogin = () => {
       <div className="login-form">
         <div className="form-content">
           <div className="logo-container">
-            <img
-              src="./src/assets/logo.png"
-              alt="CareBridge Admin"
-              className="logo"
-            />
+            <img src={logos} alt="Flaky Fantasy Admin" className="logo" />
           </div>
           <h1 className="title">
             <span className="title-word">Holla,</span>
@@ -77,8 +74,7 @@ const AdminLogin = () => {
             <span className="title-word">Back</span>
           </h1>
           <p className="subtitle">
-            Secure admin gateway for managing CareBridge's healthcare services
-            and analytics.
+            Secure admin gateway for managing Flaky Fantasy.
           </p>
           <form className="form" onSubmit={handleSubmit}>
             {error && <div className="error-message">{error}</div>}
