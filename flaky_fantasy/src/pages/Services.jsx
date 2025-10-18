@@ -41,7 +41,9 @@ const Services = () => {
                 to decorations, we'll bring your ideas to life for any occasion,
                 ensuring a centerpiece that's as delicious as it is beautiful.
               </p>
-              <button className="book-btn">Book a Service</button>
+              <a href="https://wa.link/augltt" className="book-btn">
+                Book a Service
+              </a>
             </div>
             <div className="service-image">
               <img src={cakeImage} alt="Custom Cake" />
@@ -64,7 +66,9 @@ const Services = () => {
                 cakes, and desserts to make your event unforgettable. We handle
                 everything from setup to service with elegance and care.
               </p>
-              <button className="book-btn">Book a Service</button>
+              <a href="https://wa.link/sf4hbn" className="book-btn">
+                Book a Service
+              </a>
             </div>
           </div>
 
@@ -82,7 +86,9 @@ const Services = () => {
                 Perfect for weddings, corporate events, or any gathering that
                 deserves a touch of culinary excellence.
               </p>
-              <button className="book-btn">Book a Service</button>
+              <a href="https://wa.link/ryv7k1" className="book-btn">
+                Book a Service
+              </a>
             </div>
             <div className="service-image">
               <img src={foodTrayImage} alt="Food Trays" />
@@ -105,7 +111,9 @@ const Services = () => {
                 home. Our reliable delivery service ensures your treats arrive
                 fresh and ready to be devoured.
               </p>
-              <button className="book-btn">Book a Service</button>
+              <a href="https://wa.link/17hk5t" className="book-btn">
+                Book a Service
+              </a>
             </div>
           </div>
 
@@ -124,7 +132,9 @@ const Services = () => {
                 flavors of Africa to your table for an unforgettable dining
                 experience.
               </p>
-              <button className="book-btn">Book a Service</button>
+              <a href="https://wa.link/xru3fr" className="book-btn">
+                Book a Service
+              </a>
             </div>
             <div className="service-image">
               <img src={chefImage} alt="Private Chef" />

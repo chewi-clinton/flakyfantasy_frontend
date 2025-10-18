@@ -86,6 +86,7 @@
   border-radius: 30px;
   font-size: 0.9rem;
   font-weight: 500;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(240, 192, 90, 0.2);
