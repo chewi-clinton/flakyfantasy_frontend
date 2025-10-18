@@ -4,17 +4,15 @@ import "../styles/Cart.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useApp } from "../context/AppContext.jsx";
-import { getImageUrl } from "../api/api"; // Import getImageUrl
+import { getImageUrl } from "../api/api";
 
 const CartPage = () => {
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [imageErrors, setImageErrors] = useState({});
-  const { cart, removeFromCart, updateCartItem, getCartTotal, clearCart } =
-    useApp();
-
-  const discount = discountApplied ? 3000 : 0;
-  const total = getCartTotal() - discount;
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const { cart, removeFromCart, updateCartItem, clearCart } = useApp();
 
   const handleApplyDiscount = () => {
     if (discountCode.trim() === "DISCOUNT5") {
@@ -24,8 +22,27 @@ const CartPage = () => {
     }
   };
 
-  const handleProceedToCheckout = () => {
-    alert("Proceeding to checkout...");
+  const handleCheckoutViaWhatsApp = () => {
+    const productList = cart
+      .map((item) => {
+        const imageUrl = item.image ? getImageUrl(item.image) : null;
+        const imageText = imageUrl ? `\nImage: ${imageUrl}` : "";
+        return `${item.name}: Quantity ${item.quantity}${imageText}`;
+      })
+      .join("\n\n");
+
+    const message = `Hello, I'm interested in the following products:\n\n${productList}\n\nDelivery Address: ${
+      deliveryAddress || "Not specified"
+    }\n\nDiscount Code: ${
+      discountApplied ? discountCode : "None"
+    }\n\nPlease let me know the total price and payment options.`;
+    const phoneNumber = "650966992";
+    const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(whatsappLink, "_blank");
+    setShowConfirmation(true);
+    clearCart();
   };
 
   const handleImageError = (itemId) => {
@@ -33,10 +50,6 @@ const CartPage = () => {
       ...prev,
       [itemId]: true,
     }));
-  };
-
-  const formatCurrency = (amount) => {
-    return `FCFA ${amount.toLocaleString()}`;
   };
 
   if (cart.length === 0) {
@@ -84,7 +97,9 @@ const CartPage = () => {
                 </div>
                 <div className="item-details">
                   <h3 className="item-name">{item.name}</h3>
-                  <div className="item-price">{formatCurrency(item.price)}</div>
+                  <div className="item-description">
+                    {item.description || "No description available"}
+                  </div>
                 </div>
                 <div className="item-quantity">
                   <div className="quantity-controls">
@@ -104,9 +119,6 @@ const CartPage = () => {
                     </button>
                   </div>
                 </div>
-                <div className="item-total">
-                  {formatCurrency(item.price * item.quantity)}
-                </div>
                 <button
                   className="remove-btn"
                   onClick={() => removeFromCart(item.id)}
@@ -119,19 +131,30 @@ const CartPage = () => {
 
           <div className="cart-summary">
             <h2 className="summary-title">Order Summary</h2>
-            <div className="summary-row">
-              <span>Subtotal</span>
-              <span>{formatCurrency(getCartTotal())}</span>
+
+            <div className="order-items-summary">
+              <h3>Items in your order:</h3>
+              <ul className="summary-items-list">
+                {cart.map((item) => (
+                  <li key={item.id} className="summary-item">
+                    <span className="summary-item-name">{item.name}</span>
+                    <span className="summary-item-quantity">
+                      Qty: {item.quantity}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="summary-row">
-              <span>Discount</span>
-              <span className="discount-amount">
-                -{formatCurrency(discount)}
-              </span>
-            </div>
-            <div className="summary-row total-row">
-              <span>Total</span>
-              <span>{formatCurrency(total)}</span>
+
+            <div className="delivery-address-section">
+              <h3>Delivery Address</h3>
+              <textarea
+                placeholder="Enter your delivery address"
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                className="delivery-address-input"
+                rows={3}
+              />
             </div>
 
             <div className="discount-section">
@@ -149,11 +172,56 @@ const CartPage = () => {
               >
                 Apply
               </button>
+              {discountApplied && (
+                <div className="discount-applied-message">
+                  Discount code applied successfully!
+                </div>
+              )}
             </div>
 
-            <button className="checkout-btn" onClick={handleProceedToCheckout}>
-              Proceed to Checkout
-            </button>
+            <div className="whatsapp-checkout-section">
+              <div className="whatsapp-instructions">
+                <p>
+                  Instead of completing your payment on this website, we’ll send
+                  your order details via WhatsApp. Please follow these steps
+                  carefully:
+                </p>
+                <ol>
+                  <li>
+                    Click the <strong>“Send via WhatsApp”</strong> button below.
+                  </li>
+                  <li>
+                    Your order details will automatically appear in WhatsApp —
+                    <strong>do not edit or modify</strong> the message.
+                  </li>
+                  <li>
+                    Simply tap <strong>Send</strong> to share your order with
+                    our team.
+                  </li>
+                  <li>
+                    Our team will then contact you with pricing information and
+                    payment options.
+                  </li>
+                </ol>
+                <p>Thank you for your cooperation!</p>
+              </div>
+
+              <button
+                className="whatsapp-checkout-btn"
+                onClick={handleCheckoutViaWhatsApp}
+              >
+                Checkout via WhatsApp
+              </button>
+            </div>
+
+            {showConfirmation && (
+              <div className="confirmation-message">
+                <p>
+                  Your order has been sent via WhatsApp! Our team will contact
+                  you shortly with pricing information.
+                </p>
+              </div>
+            )}
 
             <button className="clear-cart-btn" onClick={clearCart}>
               Clear Cart
