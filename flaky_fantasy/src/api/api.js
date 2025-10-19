@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL =
+  "http://http://qgkogwksg8koskwwck00gc80.46.62.211.155.sslip.io";
 
 const getImageUrl = (imagePath) => {
   if (!imagePath) return "";
