@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/OrderConfirmation.css";
+import "../styles/Orderconfirmation.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
