@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import "../styles/product_detail.css";
+import "../styles/Product_detail.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import heroCake from "../assets/hero-cake.png";
