@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logos from "../assets/logo.png";
 import { useAdmin } from "../context/AdminContext";
-import "../styles/AdminLogin.css";
+import "../styles/Adminlogin.css";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
