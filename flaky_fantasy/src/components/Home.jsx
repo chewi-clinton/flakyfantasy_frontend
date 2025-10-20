@@ -4,6 +4,18 @@ import "../styles/Home.css";
 import Header from "./Header";
 import Footer from "./Footer";
 
+// Import images from src/assets/
+import CupCakes from "../assets/Cup_cakes.JPG";
+import WeddingCakes from "../assets/Wedding_cakes.JPG";
+import Doughnut from "../assets/doughnut.jpg";
+import BirthdayCakes from "../assets/Birthday_cakes.JPG";
+import FoodTrays from "../assets/Food_trays.JPG";
+import SmallChops from "../assets/Small_chops.JPG";
+import CakeParfait from "../assets/cake_parfait.JPG";
+import CelebrationCakes from "../assets/Celebration_cakes.JPG";
+import HeroCake from "../assets/hero-cake.png";
+import PromoDiscount from "../assets/20_off.png";
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -12,49 +24,49 @@ const Home = () => {
       id: 1,
       name: "Cupcakes",
       description: "Delicious chocolate cupcakes with creamy frosting",
-      image: "./src/assets/Cup_cakes.JPG",
+      image: CupCakes, // Use imported image
     },
     {
       id: 2,
       name: "Wedding Cakes",
       description: "Crunchy peanut butter cookies stacked to perfection",
-      image: "./src/assets/Wedding_cakes.JPG",
+      image: WeddingCakes,
     },
     {
       id: 3,
       name: "Doughnuts",
       description: "Freshly made doughnuts with colorful toppings",
-      image: "./src/assets/doughnut.jpg",
+      image: Doughnut,
     },
     {
       id: 4,
       name: "Birthday Cakes",
       description: "Multi-layered pastries with rich fillings",
-      image: "./src/assets/Birthday_cakes.JPG",
+      image: BirthdayCakes,
     },
     {
       id: 5,
       name: "Food Tray",
       description: "Multi-layered pastries with rich fillings",
-      image: "./src/assets/Food_trays.JPG",
+      image: FoodTrays,
     },
     {
       id: 6,
       name: "Small Chops",
       description: "Multi-layered pastries with rich fillings",
-      image: "./src/assets/Small_chops.JPG",
+      image: SmallChops,
     },
     {
       id: 7,
       name: "Cake Parfait",
       description: "Multi-layered pastries with rich fillings",
-      image: "./src/assets/cake_parfait.JPG",
+      image: CakeParfait,
     },
     {
       id: 8,
       name: "Celebration Cake",
       description: "Multi-layered pastries with rich fillings",
-      image: "./src/assets/Celebration_cakes.JPG",
+      image: CelebrationCakes,
     },
   ];
 
@@ -266,7 +278,7 @@ const Home = () => {
             <div className="hero-image-container" ref={imageRef}>
               <div className="hero-image-wrapper">
                 <img
-                  src="./src/assets/hero-cake.png"
+                  src={HeroCake} // Use imported image
                   alt="Delicious Cake"
                   className="hero-image"
                   loading="lazy"
@@ -288,7 +300,7 @@ const Home = () => {
               <div key={product.id} className="product-card">
                 <div className="product-image-container">
                   <img
-                    src={product.image}
+                    src={product.image} // Uses imported images from products array
                     alt={product.name}
                     className="product-image"
                   />
@@ -316,7 +328,7 @@ const Home = () => {
         <div className="promo-container">
           <div className="promo-content">
             <img
-              src="./src/assets/20_off.png"
+              src={PromoDiscount} // Use imported image
               alt="20% Off"
               className="promo-discount-image"
             />

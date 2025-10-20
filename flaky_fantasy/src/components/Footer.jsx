@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/Footer.css";
+import Whatsapp from "../assets/whatsapp.png";
+import Facebook from "../assets/facebook.png";
+import Tiktok from "../assets/tiktok.png";
+import Instagram from "../assets/instagram2.jpg";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -21,11 +25,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             aria-label="Whatsapp"
           >
-            <img
-              src="./src/assets/whatsapp.png"
-              alt="Whatsapp"
-              className="social-icon"
-            />
+            <img src={Whatsapp} alt="Whatsapp" className="social-icon" />
           </a>
           <a
             href="https://www.facebook.com/profile.php?id=61567911930957&mibextid=ZbWKwL"
@@ -33,11 +33,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             aria-label="Facebook"
           >
-            <img
-              src="./src/assets/facebook.png"
-              alt="Facebook"
-              className="social-icon"
-            />
+            <img src={Facebook} alt="Facebook" className="social-icon" />
           </a>
           <a
             href="https://vm.tiktok.com/ZSH7RfJSGnW8w-Lm1r9/"
@@ -45,11 +41,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             aria-label="Tiktok"
           >
-            <img
-              src="/src/assets/tiktok.png"
-              alt="Tiktok"
-              className="social-icon"
-            />
+            <img src={Tiktok} alt="Tiktok" className="social-icon" />
           </a>
           <a
             href="https://www.instagram.com/sami2ra2025?igsh=YzljYTk1ODg3Zg=="
@@ -57,11 +49,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             aria-label="Instagram"
           >
-            <img
-              src="/src/assets/instagram2.jpg"
-              alt="Instagram"
-              className="social-icon"
-            />
+            <img src={Instagram} alt="Instagram" className="social-icon" />
           </a>
         </div>
 

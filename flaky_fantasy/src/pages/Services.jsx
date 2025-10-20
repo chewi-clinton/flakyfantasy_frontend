@@ -2,17 +2,11 @@ import React from "react";
 import "../styles/Services.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
-import cakeIcon from "../assets/homedelivery.png";
-import cakeImage from "../assets/homedelivery.png";
-import cateringIcon from "../assets/homedelivery.png";
-import cateringImage from "../assets/homedelivery.png";
-import foodTrayIcon from "../assets/homedelivery.png";
-import foodTrayImage from "../assets/homedelivery.png";
-import deliveryIcon from "../assets/homedelivery.png";
-import deliveryImage from "../assets/homedelivery.png";
-import chefIcon from "../assets/homedelivery.png";
-import chefImage from "../assets/homedelivery.png";
+import CustomCake from "../assets/custom-cake.png";
+import EventCatering from "../assets/event-catering.png";
+import FoodTrays from "../assets/food-trays.png";
+import HomeDelivery from "../assets/home-delivery.png";
+import PrivateChef from "../assets/private-chef.png";
 
 const Services = () => {
   return (
@@ -31,7 +25,7 @@ const Services = () => {
           <div className="service-item">
             <div className="service-text">
               <img
-                src={cakeIcon}
+                src={CustomCake}
                 alt="Cake Icon"
                 className="service-icon-img"
               />
@@ -46,17 +40,17 @@ const Services = () => {
               </a>
             </div>
             <div className="service-image">
-              <img src={cakeImage} alt="Custom Cake" />
+              <img src={CustomCake} alt="Custom Cake" />
             </div>
           </div>
 
           <div className="service-item reverse">
             <div className="service-image">
-              <img src={cateringImage} alt="Event Catering" />
+              <img src={EventCatering} alt="Event Catering" />
             </div>
             <div className="service-text">
               <img
-                src={cateringIcon}
+                src={EventCatering}
                 alt="Catering Icon"
                 className="service-icon-img"
               />
@@ -75,7 +69,7 @@ const Services = () => {
           <div className="service-item">
             <div className="service-text">
               <img
-                src={foodTrayIcon}
+                src={FoodTrays}
                 alt="Food Tray Icon"
                 className="service-icon-img"
               />
@@ -91,17 +85,17 @@ const Services = () => {
               </a>
             </div>
             <div className="service-image">
-              <img src={foodTrayImage} alt="Food Trays" />
+              <img src={FoodTrays} alt="Food Trays" />
             </div>
           </div>
 
           <div className="service-item reverse">
             <div className="service-image">
-              <img src={deliveryImage} alt="Home Delivery" />
+              <img src={HomeDelivery} alt="Home Delivery" />
             </div>
             <div className="service-text">
               <img
-                src={deliveryIcon}
+                src={HomeDelivery}
                 alt="Delivery Icon"
                 className="service-icon-img"
               />
@@ -120,7 +114,7 @@ const Services = () => {
           <div className="service-item">
             <div className="service-text">
               <img
-                src={chefIcon}
+                src={PrivateChef}
                 alt="Chef Icon"
                 className="service-icon-img"
               />
@@ -137,7 +131,7 @@ const Services = () => {
               </a>
             </div>
             <div className="service-image">
-              <img src={chefImage} alt="Private Chef" />
+              <img src={PrivateChef} alt="Private Chef" />
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Header.css";
 import { useApp } from "../context/AppContext.jsx";
+import Logo from "../assets/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,11 +17,7 @@ const Header = () => {
       <div className="header-container">
         <div className="logo">
           <Link to="/">
-            <img
-              src="./src/assets/logo.png"
-              alt="Logo"
-              className="logo-image"
-            />
+            <img src={Logo} alt="Logo" className="logo-image" />
           </Link>
         </div>
 

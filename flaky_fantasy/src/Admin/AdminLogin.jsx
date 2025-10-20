@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import logos from "../assets/logo.png";
+import Logo from "../assets/logo.png";
 import { useAdmin } from "../context/AdminContext";
 import "../styles/Adminlogin.css";
 
@@ -66,7 +66,7 @@ const AdminLogin = () => {
       <div className="login-form">
         <div className="form-content">
           <div className="logo-container">
-            <img src={logos} alt="Flaky Fantasy Admin" className="logo" />
+            <img src={Logo} alt="Flaky Fantasy Admin" className="logo" />
           </div>
           <h1 className="title">
             <span className="title-word">Holla,</span>
