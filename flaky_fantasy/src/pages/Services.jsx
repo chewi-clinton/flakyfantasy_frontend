@@ -2,11 +2,11 @@ import React from "react";
 import "../styles/Services.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import CustomCake from "../assets/custom-cake.png";
-import EventCatering from "../assets/event-catering.png";
-import FoodTrays from "../assets/food-trays.png";
-import HomeDelivery from "../assets/home-delivery.png";
-import PrivateChef from "../assets/private-chef.png";
+import CustomCake from "../assets/homedelivery.png";
+import EventCatering from "../assets/homedelivery.png";
+import FoodTrays from "../assets/homedelivery.png";
+import HomeDelivery from "../assets/homedelivery.png";
+import PrivateChef from "../assets/homedelivery.png";
 
 const Services = () => {
   return (
