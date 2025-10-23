@@ -55,18 +55,14 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateCartItem = (productId, quantity) => {
-    const itemIndex = state.cart.findIndex((item) => item.id === productId);
-    if (itemIndex === -1) return;
-
-    const updatedCart = cartAPI.updateCartItem(itemIndex, quantity);
+    // Fixed: Call cartAPI.updateCartItem instead of removeFromCart
+    const updatedCart = cartAPI.updateCartItem(productId, quantity);
     dispatch({ type: "UPDATE_CART_ITEM", payload: updatedCart });
   };
 
   const removeFromCart = (productId) => {
-    const itemIndex = state.cart.findIndex((item) => item.id === productId);
-    if (itemIndex === -1) return;
-
-    const updatedCart = cartAPI.removeFromCart(itemIndex);
+    // Fixed: Pass productId directly instead of finding index first
+    const updatedCart = cartAPI.removeFromCart(productId);
     dispatch({ type: "REMOVE_FROM_CART", payload: updatedCart });
   };
 
@@ -92,6 +88,7 @@ export const AppProvider = ({ children }) => {
         ...state,
         addToCart,
         updateCartItem,
+        updateQuantity: updateCartItem, // Added alias for updateQuantity
         removeFromCart,
         clearCart,
         getCartCount,

@@ -12,7 +12,8 @@ const CartPage = () => {
   const [imageErrors, setImageErrors] = useState({});
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { cart, removeFromCart, updateCartItem, clearCart } = useApp();
+
+  const { cart, removeFromCart, updateQuantity, clearCart } = useApp();
 
   const handleApplyDiscount = () => {
     if (discountCode.trim() === "DISCOUNT5") {
@@ -105,7 +106,7 @@ const CartPage = () => {
                   <div className="quantity-controls">
                     <button
                       className="quantity-btn"
-                      onClick={() => updateCartItem(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       disabled={item.quantity <= 1}
                     >
                       -
@@ -113,7 +114,7 @@ const CartPage = () => {
                     <span className="quantity-display">{item.quantity}</span>
                     <button
                       className="quantity-btn"
-                      onClick={() => updateCartItem(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
                     >
                       +
                     </button>
@@ -182,13 +183,13 @@ const CartPage = () => {
             <div className="whatsapp-checkout-section">
               <div className="whatsapp-instructions">
                 <p>
-                  Instead of completing your payment on this website, we’ll send
+                  Instead of completing your payment on this website, we'll send
                   your order details via WhatsApp. Please follow these steps
                   carefully:
                 </p>
                 <ol>
                   <li>
-                    Click the <strong>“Send via WhatsApp”</strong> button below.
+                    Click the <strong>"Send via WhatsApp"</strong> button below.
                   </li>
                   <li>
                     Your order details will automatically appear in WhatsApp —
