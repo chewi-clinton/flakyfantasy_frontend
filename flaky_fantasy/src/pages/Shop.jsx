@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { productsAPI, getImageUrl } from "../api/api"; // Import getImageUrl
+import { productsAPI, getImageUrl } from "../api/api.jsx";
 import { useApp } from "../context/AppContext.jsx";
 import "../styles/Shop.css";
 import Footer from "../components/Footer";

@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { cartAPI } from "../api/api.js";
+import { cartAPI } from "../api/api.jsx";
 import Toast from "../components/Toast.jsx";
 
 const AppContext = createContext();

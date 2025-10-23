@@ -4,7 +4,7 @@ import "../styles/Cart.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useApp } from "../context/AppContext.jsx";
-import { getImageUrl } from "../api/api";
+import { getImageUrl } from "../api/api.jsx";
 
 const CartPage = () => {
   const [discountCode, setDiscountCode] = useState("");
