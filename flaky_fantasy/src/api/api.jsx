@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://qgkogwksg8koskwwck00gc80.46.62.211.155.sslip.io";
+const BASE_URL = "https://backend.flakyfantasy.com";
 
 const getImageUrl = (imagePath) => {
   if (!imagePath) return "";
