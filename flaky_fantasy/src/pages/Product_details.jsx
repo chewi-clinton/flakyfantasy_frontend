@@ -14,6 +14,9 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageError, setImageError] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [relatedLoading, setRelatedLoading] = useState(false);
+  const [relatedError, setRelatedError] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,6 +48,38 @@ const ProductDetail = () => {
 
     fetchProduct();
   }, [productId]);
+
+  // Fetch related products when the main product is loaded
+  useEffect(() => {
+    if (product && product.category) {
+      const fetchRelatedProducts = async () => {
+        try {
+          setRelatedLoading(true);
+          setRelatedError(null);
+
+          // Fetch products from the same category
+          const response = await productsAPI.getProducts({
+            category: product.category.id || product.category.name,
+          });
+
+          // Filter out the current product and limit to 3 related products
+          const products = response.results || response || [];
+          const filtered = products
+            .filter((p) => p.id !== product.id)
+            .slice(0, 3);
+
+          setRelatedProducts(filtered);
+        } catch (err) {
+          console.error("Error fetching related products:", err);
+          setRelatedError("Failed to load related products");
+        } finally {
+          setRelatedLoading(false);
+        }
+      };
+
+      fetchRelatedProducts();
+    }
+  }, [product]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -88,6 +123,12 @@ const ProductDetail = () => {
     }
 
     return price;
+  };
+
+  const handleRelatedProductClick = (id) => {
+    navigate(`/product-details?id=${id}`);
+    // Scroll to top when navigating to a new product
+    window.scrollTo(0, 0);
   };
 
   if (loading) {
@@ -164,7 +205,6 @@ const ProductDetail = () => {
                       onClick={() => setSelectedSize(size.name.toLowerCase())}
                     >
                       {size.name}
-                      {/* Removed price display from size options */}
                     </button>
                   ))}
                 </div>
@@ -217,24 +257,41 @@ const ProductDetail = () => {
 
         <div className="related-products">
           <h2>You Might Also Like</h2>
-          <div className="related-grid">
-            {/* You can implement related products fetching here */}
-            <div className="related-product">
-              <div className="no-image">Related Product 1</div>
-              <h3>Related Product</h3>
-              <div className="related-price">0.00 FCFA</div>
+
+          {relatedLoading ? (
+            <div className="loading-related">Loading related products...</div>
+          ) : relatedError ? (
+            <div className="error-related">{relatedError}</div>
+          ) : relatedProducts.length > 0 ? (
+            <div className="related-grid">
+              {relatedProducts.map((relatedProduct) => (
+                <div
+                  key={relatedProduct.id}
+                  className="related-product"
+                  onClick={() => handleRelatedProductClick(relatedProduct.id)}
+                >
+                  <div className="related-image-container">
+                    {relatedProduct.images &&
+                    relatedProduct.images.length > 0 ? (
+                      <img
+                        src={getImageUrl(relatedProduct.images[0].image)}
+                        alt={relatedProduct.name}
+                        className="related-image"
+                      />
+                    ) : (
+                      <div className="no-image">No Image</div>
+                    )}
+                  </div>
+                  <h3>{relatedProduct.name}</h3>
+                  <div className="related-price">
+                    {(parseFloat(relatedProduct.price) || 0).toFixed(2)} FCFA
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="related-product">
-              <div className="no-image">Related Product 2</div>
-              <h3>Related Product</h3>
-              <div className="related-price">0.00 FCFA</div>
-            </div>
-            <div className="related-product">
-              <div className="no-image">Related Product 3</div>
-              <h3>Related Product</h3>
-              <div className="related-price">0.00 FCFA</div>
-            </div>
-          </div>
+          ) : (
+            <div className="no-related-products">No related products found</div>
+          )}
         </div>
       </div>
       <Footer />
