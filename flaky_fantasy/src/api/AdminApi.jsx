@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://backend.flakyfantasy.com";
+const API_URL = "https://backend.flakyfantasy.com/api";
 
 const adminApi = axios.create({
   baseURL: API_URL,
