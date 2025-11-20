@@ -131,6 +131,20 @@ const ProductDetail = () => {
     window.scrollTo(0, 0);
   };
 
+  // Get sizes for the product - use API data or default sizes
+  const getProductSizes = () => {
+    if (product && product.sizes && product.sizes.length > 0) {
+      return product.sizes;
+    }
+
+    // Default sizes if none provided by API
+    return [
+      { name: "Small", price: product ? parseFloat(product.price) * 0.8 : 0 },
+      { name: "Medium", price: product ? parseFloat(product.price) : 0 },
+      { name: "Large", price: product ? parseFloat(product.price) * 1.2 : 0 },
+    ];
+  };
+
   if (loading) {
     return (
       <>
@@ -160,6 +174,8 @@ const ProductDetail = () => {
     );
   }
 
+  const sizes = getProductSizes();
+
   return (
     <>
       <Header />
@@ -184,32 +200,28 @@ const ProductDetail = () => {
 
           <div className="product-details">
             <h1 className="product-name">{product.name}</h1>
-            <div className="product-price">
-              {getSizePrice().toFixed(2)} FCFA
-            </div>
 
             {product.description && (
               <div className="product-description">{product.description}</div>
             )}
 
-            {product.sizes && product.sizes.length > 0 && (
-              <div className="size-selection">
-                <h3>Select Size</h3>
-                <div className="size-options">
-                  {product.sizes.map((size, index) => (
-                    <button
-                      key={index}
-                      className={`size-btn ${
-                        selectedSize === size.name.toLowerCase() ? "active" : ""
-                      }`}
-                      onClick={() => setSelectedSize(size.name.toLowerCase())}
-                    >
-                      {size.name}
-                    </button>
-                  ))}
-                </div>
+            {/* Always show size selection */}
+            <div className="size-selection">
+              <h3>Select Size</h3>
+              <div className="size-options">
+                {sizes.map((size, index) => (
+                  <button
+                    key={index}
+                    className={`size-btn ${
+                      selectedSize === size.name.toLowerCase() ? "active" : ""
+                    }`}
+                    onClick={() => setSelectedSize(size.name.toLowerCase())}
+                  >
+                    {size.name}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
 
             <div className="quantity-selector">
               <h3>Quantity</h3>
@@ -283,9 +295,6 @@ const ProductDetail = () => {
                     )}
                   </div>
                   <h3>{relatedProduct.name}</h3>
-                  <div className="related-price">
-                    {(parseFloat(relatedProduct.price) || 0).toFixed(2)} FCFA
-                  </div>
                 </div>
               ))}
             </div>
