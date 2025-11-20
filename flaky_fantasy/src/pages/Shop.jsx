@@ -377,9 +377,7 @@ const ShopPage = () => {
                   >
                     {product.name}
                   </h3>
-                  <div className="product-price">
-                    {product.price.toLocaleString()} FCFA
-                  </div>
+                  {/* Removed price display */}
                   <button
                     className="add-to-cart-btn"
                     onClick={() => handleAddToCart(product)}
