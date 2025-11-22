@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { adminProductsAPI } from "../api/AdminApi.jsx";
+import Toast from "../components/Toast";
 import "../styles/ProductForm.css";
 
 const ProductForm = () => {
@@ -27,6 +28,20 @@ const ProductForm = () => {
   const [primaryImageId, setPrimaryImageId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Toast state
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+  });
+
+  const showToast = (message) => {
+    setToast({ show: true, message });
+  };
+
+  const hideToast = () => {
+    setToast({ show: false, message: "" });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -196,12 +211,17 @@ const ProductForm = () => {
         }
       }
 
-      alert(
+      // Show success toast instead of alert
+      showToast(
         isEditing
           ? "Product updated successfully!"
           : "Product added successfully!"
       );
-      navigate("/admin/products");
+
+      // Navigate after a short delay to allow the toast to be seen
+      setTimeout(() => {
+        navigate("/admin/products");
+      }, 1500);
     } catch (err) {
       setError("Failed to save product");
       console.error("Save product error:", err.response?.data || err);
@@ -447,6 +467,8 @@ const ProductForm = () => {
           </button>
         </div>
       </form>
+
+      <Toast message={toast.message} show={toast.show} onClose={hideToast} />
     </div>
   );
 };
