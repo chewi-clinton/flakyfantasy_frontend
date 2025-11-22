@@ -37,10 +37,22 @@ const CartPage = () => {
     }\n\nDiscount Code: ${
       discountApplied ? discountCode : "None"
     }\n\nPlease let me know the total price and payment options.`;
-    const phoneNumber = "650966992";
+
+    const phoneNumber = "237650966992";
+
     const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
       message
     )}`;
+
+    const isLikelyAndroidIssue = navigator.userAgent
+      .toLowerCase()
+      .includes("android");
+    if (isLikelyAndroidIssue) {
+      alert(
+        "Opening WhatsApp...\n\nNote: If the phone number displays incorrectly (e.g., as a local number like +65966992), tap the contact name > View contact > Edit, and enter +237650966992 manually to fix the display. The chat will still work correctly!"
+      );
+    }
+
     window.open(whatsappLink, "_blank");
     setShowConfirmation(true);
     clearCart();
