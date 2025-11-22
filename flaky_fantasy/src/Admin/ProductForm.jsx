@@ -78,7 +78,6 @@ const ProductForm = () => {
             description: "",
             price: "0",
           }));
-          // Reset selected labels for new products
           setSelectedLabels([]);
         }
       } catch (err) {
@@ -159,8 +158,13 @@ const ProductForm = () => {
         category: parseInt(formData.category),
         stock_quantity: parseInt(formData.stock_quantity),
         in_stock: formData.in_stock,
-        labels: isEditing ? selectedLabels : [], // Only include labels when editing
+        labels: isEditing ? selectedLabels : [],
       };
+
+      // Add image files if any
+      if (imageFiles.length > 0) {
+        productData.image_files = imageFiles;
+      }
 
       let product;
       if (isEditing) {
@@ -169,26 +173,27 @@ const ProductForm = () => {
         product = await adminProductsAPI.createProduct(productData);
       }
 
-      for (let i = 0; i < imageFiles.length; i++) {
-        await adminProductsAPI.uploadProductImage(product.id, imageFiles[i]);
-      }
-
-      if (primaryImageId && primaryImageId.toString().startsWith("new-")) {
-        const imageIndex = parseInt(primaryImageId.toString().split("-")[1]);
-        if (imageIndex < imageFiles.length) {
-          const updatedProduct = await adminProductsAPI.getProduct(product.id);
-          if (
-            updatedProduct.images &&
-            updatedProduct.images.length > imageIndex
-          ) {
-            await adminProductsAPI.setPrimaryImage(
-              product.id,
-              updatedProduct.images[imageIndex].id
+      // Set primary image if needed
+      if (primaryImageId) {
+        if (primaryImageId.toString().startsWith("new-")) {
+          const imageIndex = parseInt(primaryImageId.toString().split("-")[1]);
+          if (imageIndex < imageFiles.length) {
+            const updatedProduct = await adminProductsAPI.getProduct(
+              product.id
             );
+            if (
+              updatedProduct.images &&
+              updatedProduct.images.length > imageIndex
+            ) {
+              await adminProductsAPI.setPrimaryImage(
+                product.id,
+                updatedProduct.images[imageIndex].id
+              );
+            }
           }
+        } else {
+          await adminProductsAPI.setPrimaryImage(product.id, primaryImageId);
         }
-      } else if (primaryImageId) {
-        await adminProductsAPI.setPrimaryImage(product.id, primaryImageId);
       }
 
       alert(
@@ -199,6 +204,7 @@ const ProductForm = () => {
       navigate("/admin/products");
     } catch (err) {
       setError("Failed to save product");
+      console.error("Save product error:", err.response?.data || err);
     } finally {
       setLoading(false);
     }

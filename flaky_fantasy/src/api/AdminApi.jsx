@@ -79,12 +79,60 @@ export const adminProductsAPI = {
   },
 
   createProduct: async (productData) => {
-    const response = await adminApi.post("/products/", productData);
+    // Create FormData for multipart/form-data
+    const formData = new FormData();
+
+    // Add all product fields to FormData
+    Object.keys(productData).forEach((key) => {
+      if (key === "image_files") {
+        // Handle image files separately
+        if (productData.image_files && productData.image_files.length > 0) {
+          productData.image_files.forEach((file, index) => {
+            formData.append(`image_files[${index}]`, file);
+          });
+        }
+      } else if (key === "labels") {
+        // Convert labels array to JSON string
+        formData.append(key, JSON.stringify(productData[key]));
+      } else {
+        formData.append(key, productData[key]);
+      }
+    });
+
+    const response = await adminApi.post("/products/", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   },
 
   updateProduct: async (id, productData) => {
-    const response = await adminApi.put(`/products/${id}/`, productData);
+    // Create FormData for multipart/form-data
+    const formData = new FormData();
+
+    // Add all product fields to FormData
+    Object.keys(productData).forEach((key) => {
+      if (key === "image_files") {
+        // Handle image files separately
+        if (productData.image_files && productData.image_files.length > 0) {
+          productData.image_files.forEach((file, index) => {
+            formData.append(`image_files[${index}]`, file);
+          });
+        }
+      } else if (key === "labels") {
+        // Convert labels array to JSON string
+        formData.append(key, JSON.stringify(productData[key]));
+      } else {
+        formData.append(key, productData[key]);
+      }
+    });
+
+    const response = await adminApi.patch(`/products/${id}/`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   },
 
@@ -139,8 +187,25 @@ export const adminProductsAPI = {
   },
 
   getLabels: async () => {
-    const response = await adminApi.get("/product-labels/");
-    return response.data;
+    try {
+      const response = await adminApi.get("/product-labels/");
+      const data = response.data;
+
+      // Handle different response formats
+      if (Array.isArray(data)) {
+        return data;
+      } else if (data && data.results && Array.isArray(data.results)) {
+        return data.results;
+      } else if (data && Array.isArray(data.labels)) {
+        return data.labels;
+      } else {
+        console.warn("Unexpected labels response format:", data);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching labels:", error);
+      return []; // Return empty array on error
+    }
   },
 
   uploadProductImage: async (productId, imageData) => {
