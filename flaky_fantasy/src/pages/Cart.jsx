@@ -44,15 +44,6 @@ const CartPage = () => {
       message
     )}`;
 
-    const isLikelyAndroidIssue = navigator.userAgent
-      .toLowerCase()
-      .includes("android");
-    if (isLikelyAndroidIssue) {
-      alert(
-        "Opening WhatsApp...\n\nNote: If the phone number displays incorrectly (e.g., as a local number like +65966992), tap the contact name > View contact > Edit, and enter +237650966992 manually to fix the display. The chat will still work correctly!"
-      );
-    }
-
     window.open(whatsappLink, "_blank");
     setShowConfirmation(true);
     clearCart();
