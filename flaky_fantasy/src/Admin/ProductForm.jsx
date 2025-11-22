@@ -78,6 +78,8 @@ const ProductForm = () => {
             description: "",
             price: "0",
           }));
+          // Reset selected labels for new products
+          setSelectedLabels([]);
         }
       } catch (err) {
         setError("Failed to load data");
@@ -152,12 +154,12 @@ const ProductForm = () => {
     try {
       const productData = {
         name: formData.name,
-        description: isEditing ? formData.description : "", // Use empty string for new products
-        price: isEditing ? parseFloat(formData.price) : 0, // Use 0 for new products
+        description: isEditing ? formData.description : "",
+        price: isEditing ? parseFloat(formData.price) : 0,
         category: parseInt(formData.category),
         stock_quantity: parseInt(formData.stock_quantity),
         in_stock: formData.in_stock,
-        labels: selectedLabels,
+        labels: isEditing ? selectedLabels : [], // Only include labels when editing
       };
 
       let product;
@@ -295,27 +297,32 @@ const ProductForm = () => {
               </label>
             </div>
 
-            <div className="form-group">
-              <label>Labels</label>
-              <div className="labels-container">
-                {Array.isArray(labels) && labels.length > 0 ? (
-                  labels.map((label) => (
-                    <div key={label.id} className="label-item">
-                      <input
-                        type="checkbox"
-                        id={`label-${label.id}`}
-                        value={label.id}
-                        checked={selectedLabels.includes(label.id)}
-                        onChange={handleLabelChange}
-                      />
-                      <label htmlFor={`label-${label.id}`}>{label.name}</label>
-                    </div>
-                  ))
-                ) : (
-                  <p className="no-labels">No labels available</p>
-                )}
+            {/* Only show labels field when editing */}
+            {isEditing && (
+              <div className="form-group">
+                <label>Labels</label>
+                <div className="labels-container">
+                  {Array.isArray(labels) && labels.length > 0 ? (
+                    labels.map((label) => (
+                      <div key={label.id} className="label-item">
+                        <input
+                          type="checkbox"
+                          id={`label-${label.id}`}
+                          value={label.id}
+                          checked={selectedLabels.includes(label.id)}
+                          onChange={handleLabelChange}
+                        />
+                        <label htmlFor={`label-${label.id}`}>
+                          {label.name}
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-labels">No labels available</p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Only show description field when editing */}
             {isEditing && (
