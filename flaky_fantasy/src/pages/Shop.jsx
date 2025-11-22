@@ -62,24 +62,6 @@ const ShopPage = () => {
           (product) =>
             product.category && product.category.name === selectedFilter
         );
-      } else if (selectedFilter === "Price: Low to High") {
-        result = [...result].sort((a, b) => a.price - b.price);
-      } else if (selectedFilter === "Price: High to Low") {
-        result = [...result].sort((a, b) => b.price - a.price);
-      } else if (selectedFilter === "New Items") {
-        result = result.filter(
-          (product) =>
-            product.labels &&
-            Array.isArray(product.labels) &&
-            product.labels.some((label) => label.name === "NEW")
-        );
-      } else if (selectedFilter === "Best Sellers") {
-        result = result.filter(
-          (product) =>
-            product.labels &&
-            Array.isArray(product.labels) &&
-            product.labels.some((label) => label.name === "BEST SELLER")
-        );
       } else if (selectedFilter === "Discounts") {
         result = result.filter(
           (product) =>
@@ -118,10 +100,7 @@ const ShopPage = () => {
     ...(Array.isArray(categories)
       ? categories.map((cat) => (cat ? cat.name : "")).filter(Boolean)
       : []),
-    "Price: Low to High",
-    "Price: High to Low",
-    "New Items",
-    "Best Sellers",
+
     "Discounts",
   ];
 
