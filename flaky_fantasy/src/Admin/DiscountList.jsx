@@ -103,10 +103,7 @@ const DiscountList = () => {
   return (
     <div className="discount-list-page">
       <div className="admin-page-header">
-        <button
-          className="back-btn"
-          onClick={() => navigate("/admin/dashboard")}
-        >
+        <button className="back-btn" onClick={() => navigate("/admin")}>
           ← Back to Dashboard
         </button>
         <h1>Discount Codes</h1>

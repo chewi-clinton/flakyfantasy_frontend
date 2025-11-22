@@ -98,10 +98,7 @@ const ProductList = () => {
   return (
     <div className="product-list-page">
       <div className="admin-page-header">
-        <button
-          className="back-btn"
-          onClick={() => navigate("/admin/dashboard")}
-        >
+        <button className="back-btn" onClick={() => navigate("/admin")}>
           ← Back to Dashboard
         </button>
         <h1>Products</h1>

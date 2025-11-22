@@ -65,10 +65,7 @@ const CategoryList = () => {
   return (
     <div className="category-list-page">
       <div className="admin-page-header">
-        <button
-          className="back-btn"
-          onClick={() => navigate("/admin/dashboard")}
-        >
+        <button className="back-btn" onClick={() => navigate("/admin")}>
           ← Back to Dashboard
         </button>
         <h1>Categories</h1>
