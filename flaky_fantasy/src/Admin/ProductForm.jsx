@@ -19,7 +19,7 @@ const ProductForm = () => {
   });
 
   const [categories, setCategories] = useState([]);
-  const [labels, setLabels] = useState([]); // Initialize as empty array
+  const [labels, setLabels] = useState([]);
   const [selectedLabels, setSelectedLabels] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
@@ -37,7 +37,6 @@ const ProductForm = () => {
           adminProductsAPI.getLabels(),
         ]);
 
-        // Ensure responses are arrays before setting state
         setCategories(Array.isArray(categoriesRes) ? categoriesRes : []);
         setLabels(Array.isArray(labelsRes) ? labelsRes : []);
 
@@ -72,10 +71,16 @@ const ProductForm = () => {
           if (primaryImage) {
             setPrimaryImageId(primaryImage.id);
           }
+        } else {
+          // Set default values for new products
+          setFormData((prev) => ({
+            ...prev,
+            description: "",
+            price: "0",
+          }));
         }
       } catch (err) {
         setError("Failed to load data");
-        // Set empty arrays on error to prevent map errors
         setCategories([]);
         setLabels([]);
       } finally {
@@ -147,8 +152,8 @@ const ProductForm = () => {
     try {
       const productData = {
         name: formData.name,
-        description: formData.description,
-        price: parseFloat(formData.price),
+        description: isEditing ? formData.description : "", // Use empty string for new products
+        price: isEditing ? parseFloat(formData.price) : 0, // Use 0 for new products
         category: parseInt(formData.category),
         stock_quantity: parseInt(formData.stock_quantity),
         in_stock: formData.in_stock,
@@ -247,19 +252,22 @@ const ProductForm = () => {
               </select>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="price">Price (FCFA) *</label>
-              <input
-                type="number"
-                id="price"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                min="0"
-                step="0.01"
-                required
-              />
-            </div>
+            {/* Only show price field when editing */}
+            {isEditing && (
+              <div className="form-group">
+                <label htmlFor="price">Price (FCFA) *</label>
+                <input
+                  type="number"
+                  id="price"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="stock_quantity">Stock Quantity *</label>
@@ -309,17 +317,20 @@ const ProductForm = () => {
               </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="description">Description *</label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows="4"
-                required
-              ></textarea>
-            </div>
+            {/* Only show description field when editing */}
+            {isEditing && (
+              <div className="form-group">
+                <label htmlFor="description">Description *</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="4"
+                  required
+                ></textarea>
+              </div>
+            )}
           </div>
 
           <div className="form-column">
