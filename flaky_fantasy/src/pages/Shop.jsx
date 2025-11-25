@@ -19,8 +19,7 @@ const ShopPage = () => {
   const navigate = useNavigate();
   const { addToCart } = useApp();
 
-  // Pagination settings
-  const productsPerPage = 9; // Number of products per page
+  const productsPerPage = 9;
   const [totalPages, setTotalPages] = useState(0);
   const [currentPageProducts, setCurrentPageProducts] = useState([]);
 
@@ -51,45 +50,55 @@ const ShopPage = () => {
   }, []);
 
   useEffect(() => {
-    let result = products;
+    let result = [...products];
 
     if (selectedFilter !== "All") {
-      if (
+      const normalizedFilter = selectedFilter.toLowerCase().trim();
+
+      const isCategory =
         Array.isArray(categories) &&
-        categories.some((cat) => cat && cat.name === selectedFilter)
-      ) {
-        result = result.filter(
-          (product) =>
-            product.category && product.category.name === selectedFilter
+        categories.some(
+          (cat) =>
+            cat && cat.name && cat.name.toLowerCase() === normalizedFilter
         );
-      } else if (selectedFilter === "Discounts") {
-        result = result.filter(
-          (product) =>
-            product.labels &&
-            Array.isArray(product.labels) &&
-            product.labels.some(
-              (label) => label.name && label.name.includes("OFF")
-            )
+
+      if (isCategory) {
+        const filterCategory = categories.find(
+          (cat) =>
+            cat && cat.name && cat.name.toLowerCase() === normalizedFilter
         );
+
+        if (filterCategory) {
+          const filterId = filterCategory.id;
+
+          result = result.filter((product) => {
+            if (!product.category) return false;
+
+            const productCategoryId =
+              typeof product.category === "object" && product.category.id
+                ? product.category.id
+                : product.category;
+
+            return productCategoryId === filterId;
+          });
+        } else {
+          result = [];
+        }
       }
     }
 
     setFilteredProducts(result);
-    setActivePage(1); // Reset to first page when filter changes
+    setActivePage(1);
   }, [products, selectedFilter, categories]);
 
-  // Update pagination when filtered products change
   useEffect(() => {
-    // Calculate total pages
     const pages = Math.ceil(filteredProducts.length / productsPerPage);
     setTotalPages(pages);
 
-    // Ensure active page is within valid range
     if (activePage > pages && pages > 0) {
       setActivePage(pages);
     }
 
-    // Get products for current page
     const startIndex = (activePage - 1) * productsPerPage;
     const endIndex = startIndex + productsPerPage;
     setCurrentPageProducts(filteredProducts.slice(startIndex, endIndex));
@@ -98,10 +107,10 @@ const ShopPage = () => {
   const filterOptions = [
     "All",
     ...(Array.isArray(categories)
-      ? categories.map((cat) => (cat ? cat.name : "")).filter(Boolean)
+      ? categories
+          .map((cat) => (cat && cat.name ? cat.name : ""))
+          .filter(Boolean)
       : []),
-
-    "Discounts",
   ];
 
   const handleAddToCart = (product) => {
@@ -122,13 +131,14 @@ const ShopPage = () => {
   const getTagClass = (tag) => {
     if (!tag) return "";
 
-    switch (tag) {
+    const tagUpper = tag.toUpperCase();
+    switch (tagUpper) {
       case "NEW":
         return "tag-new";
       case "BEST SELLER":
         return "tag-best-seller";
       default:
-        if (tag.includes("OFF")) {
+        if (tagUpper.includes("OFF")) {
           return "tag-discount";
         }
         return "";
@@ -142,9 +152,8 @@ const ShopPage = () => {
 
   const handlePageChange = (page) => {
     setActivePage(page);
-    // Scroll to top of products section
     window.scrollTo({
-      top: document.querySelector(".products-grid").offsetTop - 100,
+      top: document.querySelector(".products-grid")?.offsetTop - 100 || 0,
       behavior: "smooth",
     });
   };
@@ -153,7 +162,7 @@ const ShopPage = () => {
     if (totalPages <= 1) return null;
 
     const pageNumbers = [];
-    const maxVisiblePages = 5; // Maximum number of page buttons to show
+    const maxVisiblePages = 5;
 
     let startPage = Math.max(1, activePage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
@@ -162,7 +171,6 @@ const ShopPage = () => {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
-    // Previous button
     pageNumbers.push(
       <button
         key="prev"
@@ -174,7 +182,6 @@ const ShopPage = () => {
       </button>
     );
 
-    // First page
     if (startPage > 1) {
       pageNumbers.push(
         <button
@@ -195,7 +202,6 @@ const ShopPage = () => {
       }
     }
 
-    // Page numbers
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(
         <button
@@ -208,7 +214,6 @@ const ShopPage = () => {
       );
     }
 
-    // Last page
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
         pageNumbers.push(
@@ -229,7 +234,6 @@ const ShopPage = () => {
       );
     }
 
-    // Next button
     pageNumbers.push(
       <button
         key="next"
@@ -356,7 +360,6 @@ const ShopPage = () => {
                   >
                     {product.name}
                   </h3>
-                  {/* Removed price display */}
                   <button
                     className="add-to-cart-btn"
                     onClick={() => handleAddToCart(product)}
