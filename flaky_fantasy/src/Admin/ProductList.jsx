@@ -8,7 +8,7 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  // CHANGED: selectedCategory now stores the ID (as a string from the select), "all" for no filter
+
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const [categories, setCategories] = useState([]);
@@ -19,16 +19,15 @@ const ProductList = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Ensure both API calls succeed before updating state
+
         const [productsRes, categoriesRes] = await Promise.all([
           adminProductsAPI.getProducts(),
           adminProductsAPI.getCategories(),
         ]);
 
-        // Assumes productsRes is an object with a 'results' array
         setProducts(productsRes.results || []);
         setFilteredProducts(productsRes.results || []);
-        // Assumes categoriesRes is an array
+
         setCategories(categoriesRes || []);
       } catch (err) {
         console.error("Fetch data error:", err);
@@ -41,11 +40,9 @@ const ProductList = () => {
     fetchData();
   }, []);
 
-  // Filtering Logic (Updated to filter by ID)
   useEffect(() => {
     let result = products;
 
-    // 1. Search Filter
     if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase();
       result = result.filter((product) =>
@@ -53,22 +50,16 @@ const ProductList = () => {
       );
     }
 
-    // 2. Category Filter (Filtering by ID)
     if (selectedCategory !== "all") {
-      const selectedCategoryId = Number(selectedCategory); // Convert string ID to number
+      const selectedCategoryId = Number(selectedCategory);
 
       result = result.filter((product) => {
-        // Handle two possible product category structures:
-        // 1. product.category is a nested object: { id: 5, name: "..." }
-        // 2. product.category is just the ID: 5
         const productCategoryId = product.category?.id || product.category;
 
-        // Ensure comparison is between two numbers
         return Number(productCategoryId) === selectedCategoryId;
       });
     }
 
-    // 3. Availability Filter
     if (availabilityFilter === "available") {
       result = result.filter((product) => product.in_stock);
     } else if (availabilityFilter === "sold-out") {
@@ -127,7 +118,7 @@ const ProductList = () => {
               className="filter-select"
             >
               <option value="all">All Categories</option>
-              {/* UPDATED: Use category.id for the value for reliable filtering */}
+
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -177,7 +168,7 @@ const ProductList = () => {
               <div className="product-details">
                 <div className="product-header">
                   <h3 className="product-name">{product.name}</h3>
-                  {/* Safely display category name */}
+
                   <span className="product-category">
                     {product.category?.name || "N/A"}
                   </span>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../styles/ContactUs.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+
 const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -19,7 +20,25 @@ const ContactUs = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+
+    const targetNumber = "237650966992";
+
+    const message =
+      `New Message from the Flaky Fantasy website client!` +
+      `I'm ${formData.name}, ` +
+      `*Details:*` +
+      `Phone: ${formData.phone}` +
+      `Email: ${formData.email}` +
+      `*My Message:` +
+      `${formData.message}`;
+
+    const encodedMessage = encodeURIComponent(message);
+
+    const whatsappUrl = `https://wa.me/${targetNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, "_blank");
+
+    setFormData({ name: "", phone: "", email: "", message: "" });
   };
 
   return (
@@ -89,7 +108,7 @@ const ContactUs = () => {
                 </div>
 
                 <button type="submit" className="submit-btn">
-                  SEND MESSAGE
+                  SEND MESSAGE VIA WHATSAPP
                 </button>
               </form>
             </div>
