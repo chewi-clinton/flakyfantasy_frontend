@@ -8,6 +8,7 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  // CHANGED: selectedCategory now stores the ID (as a string from the select), "all" for no filter
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const [categories, setCategories] = useState([]);
@@ -18,16 +19,20 @@ const ProductList = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        // Ensure both API calls succeed before updating state
         const [productsRes, categoriesRes] = await Promise.all([
           adminProductsAPI.getProducts(),
           adminProductsAPI.getCategories(),
         ]);
 
-        setProducts(productsRes.results);
-        setFilteredProducts(productsRes.results);
-        setCategories(categoriesRes);
+        // Assumes productsRes is an object with a 'results' array
+        setProducts(productsRes.results || []);
+        setFilteredProducts(productsRes.results || []);
+        // Assumes categoriesRes is an array
+        setCategories(categoriesRes || []);
       } catch (err) {
-        setError("Failed to load products");
+        console.error("Fetch data error:", err);
+        setError("Failed to load products and categories.");
       } finally {
         setLoading(false);
       }
@@ -36,21 +41,34 @@ const ProductList = () => {
     fetchData();
   }, []);
 
+  // Filtering Logic (Updated to filter by ID)
   useEffect(() => {
     let result = products;
 
+    // 1. Search Filter
     if (searchTerm) {
+      const lowerSearchTerm = searchTerm.toLowerCase();
       result = result.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        product.name.toLowerCase().includes(lowerSearchTerm)
       );
     }
 
+    // 2. Category Filter (Filtering by ID)
     if (selectedCategory !== "all") {
-      result = result.filter(
-        (product) => product.category.name === selectedCategory
-      );
+      const selectedCategoryId = Number(selectedCategory); // Convert string ID to number
+
+      result = result.filter((product) => {
+        // Handle two possible product category structures:
+        // 1. product.category is a nested object: { id: 5, name: "..." }
+        // 2. product.category is just the ID: 5
+        const productCategoryId = product.category?.id || product.category;
+
+        // Ensure comparison is between two numbers
+        return Number(productCategoryId) === selectedCategoryId;
+      });
     }
 
+    // 3. Availability Filter
     if (availabilityFilter === "available") {
       result = result.filter((product) => product.in_stock);
     } else if (availabilityFilter === "sold-out") {
@@ -68,27 +86,6 @@ const ProductList = () => {
       } catch (err) {
         setError("Failed to delete product");
       }
-    }
-  };
-
-  const toggleStockStatus = async (id, currentStatus) => {
-    try {
-      const product = products.find((p) => p.id === id);
-      await adminProductsAPI.updateStock(id, currentStatus ? 0 : 10);
-
-      setProducts(
-        products.map((p) =>
-          p.id === id
-            ? {
-                ...p,
-                in_stock: !currentStatus,
-                stock_quantity: currentStatus ? 0 : 10,
-              }
-            : p
-        )
-      );
-    } catch (err) {
-      setError("Failed to update stock status");
     }
   };
 
@@ -130,8 +127,9 @@ const ProductList = () => {
               className="filter-select"
             >
               <option value="all">All Categories</option>
+              {/* UPDATED: Use category.id for the value for reliable filtering */}
               {categories.map((category) => (
-                <option key={category.id} value={category.name}>
+                <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
@@ -179,8 +177,9 @@ const ProductList = () => {
               <div className="product-details">
                 <div className="product-header">
                   <h3 className="product-name">{product.name}</h3>
+                  {/* Safely display category name */}
                   <span className="product-category">
-                    {product.category.name}
+                    {product.category?.name || "N/A"}
                   </span>
                 </div>
 
@@ -205,16 +204,7 @@ const ProductList = () => {
                   >
                     Edit
                   </Link>
-                  <button
-                    className={`action-btn stock-btn ${
-                      product.in_stock ? "stock-out-btn" : "stock-in-btn"
-                    }`}
-                    onClick={() =>
-                      toggleStockStatus(product.id, product.in_stock)
-                    }
-                  >
-                    {product.in_stock ? "Out of Stock" : "In Stock"}
-                  </button>
+
                   <button
                     className="action-btn delete-btn"
                     onClick={() => deleteProduct(product.id)}
