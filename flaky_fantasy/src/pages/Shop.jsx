@@ -19,7 +19,7 @@ const ShopPage = () => {
   const navigate = useNavigate();
   const { addToCart } = useApp();
 
-  const productsPerPage = 9;
+  const productsPerPage = 10;
   const [totalPages, setTotalPages] = useState(0);
   const [currentPageProducts, setCurrentPageProducts] = useState([]);
 
