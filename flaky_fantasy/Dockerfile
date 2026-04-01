@@ -1,41 +1,37 @@
-# Use Node.js official image as base
+# Build stage
 FROM node:22-alpine AS build
-
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
+# Copy package files from the correct subfolder
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies for build)
+# Install dependencies
 RUN npm install
 
-# Copy source code
+# Copy the rest of the source code
 COPY . .
 
-# Build the application
+# Build the React app
 RUN npm run build
 
 # Production stage
 FROM nginx:alpine
 
-# Copy built assets from build stage
+# Copy built files
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy custom nginx configuration for React Router (optional)
+# Nginx config for React Router
 COPY <<EOF /etc/nginx/conf.d/default.conf
 server {
     listen 80;
     server_name localhost;
     root /usr/share/nginx/html;
-    index index.html index.htm;
+    index index.html;
 
-    # Handle React Router - serve index.html for all routes
     location / {
         try_files \$uri \$uri/ /index.html;
     }
 
-    # Cache static assets
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
@@ -43,8 +39,5 @@ server {
 }
 EOF
 
-# Expose port 80
 EXPOSE 80
-
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
