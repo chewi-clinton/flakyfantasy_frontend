@@ -4,15 +4,11 @@ const BASE_URL = "https://backend.flakyfantasy.com";
 
 const getImageUrl = (imagePath) => {
   if (!imagePath) return "";
-
-  if (imagePath.startsWith("http")) {
-    return imagePath;
+  let url = imagePath.toString().trim();
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url.replace(/^http:\/\//i, "https://");
   }
-
-  const normalizedPath = imagePath.startsWith("/")
-    ? imagePath.slice(1)
-    : imagePath;
-
+  const normalizedPath = url.startsWith("/") ? url.slice(1) : url;
   return `${BASE_URL}/media/${normalizedPath}`;
 };
 
@@ -30,17 +26,14 @@ export const productsAPI = {
     const response = await api.get("/products/", { params });
     return response.data;
   },
-
   getProduct: async (id) => {
     const response = await api.get(`/products/${id}/`);
     return response.data;
   },
-
   getCategories: async () => {
     const response = await api.get("/categories/");
     return response.data;
   },
-
   getLabels: async () => {
     const response = await api.get("/product-labels/");
     return response.data;
@@ -59,7 +52,6 @@ export const cartAPI = {
     const cart = localStorage.getItem("cart");
     return cart ? JSON.parse(cart) : [];
   },
-
   addToCart: (product, quantity = 1, options = {}) => {
     const cart = cartAPI.getCart();
     const existingItem = cart.find(
@@ -67,33 +59,27 @@ export const cartAPI = {
         item.id === product.id &&
         JSON.stringify(item.options) === JSON.stringify(options)
     );
-
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
-      // Get the full image URL
       const imageUrl = product.images?.[0]?.image
         ? getImageUrl(product.images[0].image)
         : "";
-
       cart.push({
         id: product.id,
         name: product.name,
         price: product.price,
-        image: imageUrl, // Store the full URL
+        image: imageUrl,
         quantity,
         options,
       });
     }
-
     localStorage.setItem("cart", JSON.stringify(cart));
     return cart;
   },
-
   updateCartItem: (productId, quantity) => {
     const cart = cartAPI.getCart();
     const itemIndex = cart.findIndex((item) => item.id === productId);
-
     if (itemIndex !== -1) {
       if (quantity > 0) {
         cart[itemIndex].quantity = quantity;
@@ -104,25 +90,20 @@ export const cartAPI = {
     }
     return cart;
   },
-
   removeFromCart: (productId) => {
     const cart = cartAPI.getCart();
     const itemIndex = cart.findIndex((item) => item.id === productId);
-
     if (itemIndex !== -1) {
       cart.splice(itemIndex, 1);
       localStorage.setItem("cart", JSON.stringify(cart));
     }
     return cart;
   },
-
   clearCart: () => {
     localStorage.removeItem("cart");
     return [];
   },
 };
 
-// Export the getImageUrl function for use in components
 export { getImageUrl };
-
 export default api;
