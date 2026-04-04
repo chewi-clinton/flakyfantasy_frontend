@@ -91,7 +91,8 @@ export const adminProductsAPI = {
           });
         }
       } else if (key === "labels") {
-        formData.append(key, JSON.stringify(productData[key]));
+        // Send as label_ids to match the write-only serializer field
+        productData[key].forEach((id) => formData.append("label_ids", id));
       } else {
         formData.append(key, productData[key]);
       }
@@ -113,7 +114,10 @@ export const adminProductsAPI = {
           });
         }
       } else if (key === "labels") {
-        formData.append(key, JSON.stringify(productData[key]));
+        // Send as label_ids to match the write-only serializer field
+        productData[key].forEach((labelId) =>
+          formData.append("label_ids", labelId)
+        );
       } else {
         formData.append(key, productData[key]);
       }
